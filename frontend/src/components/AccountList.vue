@@ -170,6 +170,7 @@ const total = ref(0)
 const searchQuery = ref('')
 const currentPage = ref(1)
 const pageSize = ref(12)
+const isOfflineMode = ref(false)
 
 // --- 批量操作 ---
 const selectedIds = ref([])
@@ -240,7 +241,20 @@ let searchTimer = null
 // --- 核心逻辑 ---
 // 获取账号列表
 const fetchAccounts = async () => {
-  loading.value = true
+  // 1. 离线优先策略：先尝试加载本地缓存
+  const cachedData = localStorage.getItem('cached_accounts')
+  if (cachedData) {
+    try {
+      const parsed = JSON.parse(cachedData)
+      accounts.value = parsed.accounts || []
+      if (parsed.pagination) total.value = parsed.pagination.total
+      updateAccountsStatus() // 立即开始倒计时
+      loading.value = false // 有缓存就不显示全屏 Loading，体验更好
+    } catch (e) { console.error('Cache load failed', e) }
+  } else {
+    loading.value = true
+  }
+
   try {
     const query = new URLSearchParams({
       page: currentPage.value,
@@ -250,12 +264,25 @@ const fetchAccounts = async () => {
     
     const data = await request(`/api/accounts?${query}`)
     if (data.success) {
+      // 2. 网络请求成功：更新缓存 (仅在第一页且无搜索时缓存，避免缓存了局部数据)
+      if (currentPage.value === 1 && !searchQuery.value) {
+        localStorage.setItem('cached_accounts', JSON.stringify(data))
+      }
+      isOfflineMode.value = false
       accounts.value = data.accounts || []
       updateAccountsStatus() // 立即计算一次
       if (data.pagination) total.value = data.pagination.total
     }
   } catch (error) {
     console.error('Failed to fetch accounts', error)
+    // 3. 网络请求失败：如果是离线状态且已有缓存，则不报错
+    if (!navigator.onLine || error.message.includes('Failed to fetch')) {
+      isOfflineMode.value = true
+      if (accounts.value.length > 0) {
+        ElMessage.warning('网络不可用，正在使用离线数据')
+        return
+      }
+    }
   } finally {
     loading.value = false
   }

@@ -1,4 +1,5 @@
 import { Context, Next } from 'hono';
+import { getCookie } from 'hono/cookie';
 import { SECURITY_CONFIG, AppError, EnvBindings } from '../config';
 import { verifySecureJWT } from './crypto';
 
@@ -63,12 +64,20 @@ export function parseOTPAuthURI(uri: string) {
 
 // 3. Hono JWT 鉴权中间件
 export async function authMiddleware(c: Context<{ Bindings: EnvBindings, Variables: { user: any } }>, next: Next) {
-    const authHeader = c.req.header('Authorization');
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-        throw new AppError('Unauthorized: Missing or invalid token', 401);
+    // 1. 从 Cookie 获取 JWT
+    const token = getCookie(c, 'auth_token');
+    if (!token) {
+        throw new AppError('Unauthorized: Missing session cookie', 401);
     }
     
-    const token = authHeader.substring(7);
+    // 2. CSRF 校验 (Double Submit Cookie)
+    const csrfCookie = getCookie(c, 'csrf_token');
+    const csrfHeader = c.req.header('X-CSRF-Token');
+    if (!csrfCookie || !csrfHeader || csrfCookie !== csrfHeader) {
+        throw new AppError('Forbidden: CSRF token mismatch', 403);
+    }
+
+    // 3. 验证 JWT
     const payload = await verifySecureJWT(token, c.env.JWT_SECRET);
     
     if (!payload || !payload.userInfo) {

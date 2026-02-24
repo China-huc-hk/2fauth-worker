@@ -1,8 +1,10 @@
 import { Hono } from 'hono';
+import { setCookie } from 'hono/cookie';
 import { EnvBindings, AppError } from '../config';
 import { generateSecureJWT } from '../utils/crypto';
+import { authMiddleware } from '../utils/helper';
 
-const auth = new Hono<{ Bindings: EnvBindings }>();
+const auth = new Hono<{ Bindings: EnvBindings, Variables: { user: any } }>();
 
 // 内部辅助函数：获取 GitHub 用户信息
 async function fetchGitHubUser(accessToken: string, oauthBaseUrl: string) {
@@ -103,10 +105,39 @@ auth.post('/callback', async (c) => {
 
     const token = await generateSecureJWT(payload, env.JWT_SECRET);
 
+    // 1. 设置 httpOnly 的鉴权 Cookie (前端无法读取，防 XSS)
+    setCookie(c, 'auth_token', token, {
+        httpOnly: true,
+        secure: true,
+        sameSite: 'Strict',
+        maxAge: 7 * 24 * 60 * 60, // 7天
+        path: '/',
+    });
+
+    // 2. 设置 CSRF Token Cookie (前端可以读取，用于请求头)
+    const csrfToken = crypto.randomUUID();
+    setCookie(c, 'csrf_token', csrfToken, {
+        httpOnly: false, // 允许前端 JS 读取
+        secure: true,
+        sameSite: 'Strict',
+        maxAge: 7 * 24 * 60 * 60,
+        path: '/',
+    });
+
     return c.json({
         success: true,
-        token,
         userInfo: payload.userInfo
+    });
+});
+
+// ==========================================
+// 3. 获取当前用户信息 (前端 Token 变为 httpOnly 后需要此接口)
+// ==========================================
+auth.get('/me', authMiddleware, (c) => {
+    const user = c.get('user');
+    return c.json({
+        success: true,
+        userInfo: user
     });
 });
 

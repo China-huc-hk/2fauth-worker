@@ -17,8 +17,9 @@ const app = new Hono<{ Bindings: Bindings }>();
 // 1. 全局中间件
 app.use('*', logger()); // 自动打印请求日志
 app.use('/api/*', cors({
-    origin: '*', // 开发环境允许跨域，生产环境可配置具体域名
-    allowHeaders: ['Content-Type', 'Authorization'],
+    origin: (origin) => origin, // 允许携带 Cookie 时，Origin 不能为 *，这里改为动态反射
+    credentials: true, // 允许浏览器发送 Cookie
+    allowHeaders: ['Content-Type', 'Authorization', 'X-CSRF-Token'], // 允许自定义 CSRF 头
     allowMethods: ['POST', 'GET', 'OPTIONS', 'PUT', 'DELETE'],
     maxAge: 86400,
 }));

@@ -1,4 +1,5 @@
 import { reactive } from 'vue'
+import { request } from '../utils/request'
 
 const getStoredUser = () => {
   try {
@@ -19,6 +20,18 @@ export const userState = reactive({
   clearUserInfo() {
     this.userInfo = {}
     localStorage.removeItem('userInfo')
-    localStorage.removeItem('authToken')
+  },
+
+  async fetchUserInfo() {
+    try {
+      const data = await request('/api/oauth/me')
+      if (data.success) {
+        this.setUserInfo(data.userInfo)
+        return true
+      }
+    } catch (e) {
+      this.clearUserInfo()
+      return false
+    }
   }
 })

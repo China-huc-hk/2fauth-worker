@@ -70,9 +70,9 @@ onMounted(async () => {
     const data = await response.json()
 
     if (data.success) {
-      // 登录成功！把后端发的系统门票存进浏览器
-      localStorage.setItem('authToken', data.token)
-      userState.setUserInfo(data.userInfo)
+      // 登录成功！Token 已写入 httpOnly Cookie
+      // 立即调用接口确认会话有效性，并更新用户信息
+      await userState.fetchUserInfo()
       
       // 一把推开大门，进入主界面
       router.push('/')
