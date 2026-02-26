@@ -28,6 +28,8 @@ export const CSP_POLICY = {
         "data:",
         "blob:",
         "https://avatars.githubusercontent.com",
+        "https://t.me", // Telegram User Avatars
+        "https://*.telesco.pe", // Telegram Avatar CDN
         "https://www.nodeloc.com",
     ],
     // 连接源: 允许 API 请求、Cloudflare 统计上报
@@ -37,6 +39,10 @@ export const CSP_POLICY = {
         "https://github.com",
         "https://cloudflareinsights.com",
         "https://static.cloudflareinsights.com",
+    ],
+    // 框架源
+    FRAMES: [
+        "'self'",
     ],
 };
 
@@ -56,6 +62,8 @@ export type EnvBindings = {
     OAUTH_GITEE_CLIENT_ID?: string;
     OAUTH_GITEE_CLIENT_SECRET?: string;
     OAUTH_GITEE_REDIRECT_URI?: string;
+    OAUTH_TELEGRAM_BOT_NAME?: string; // e.g. MyAuthBot
+    OAUTH_TELEGRAM_BOT_TOKEN?: string;
     OAUTH_ALLOWED_USERS: string;    // 允许登录的 Email 或 Username 白名单 (必填)
     JWT_SECRET: string;
     ENCRYPTION_KEY: string;

@@ -26,5 +26,6 @@ export abstract class BaseOAuthProvider {
     abstract getAuthorizeUrl(state: string): Promise<{ url: string, codeVerifier?: string }> | { url: string, codeVerifier?: string };
 
     // 2. 处理回调：Code -> Token -> UserInfo
-    abstract handleCallback(code: string, codeVerifier?: string): Promise<OAuthUserInfo>;
+    // 修改：支持传入 URLSearchParams (Telegram 需要验证所有参数) 或 string (标准 OAuth code)
+    abstract handleCallback(params: string | URLSearchParams, codeVerifier?: string): Promise<OAuthUserInfo>;
 }

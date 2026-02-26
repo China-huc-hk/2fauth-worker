@@ -8,6 +8,7 @@ import { EnvBindings, CSP_POLICY } from './config';
 import authRoutes from './routes/auth';
 import accountsRoutes from './routes/accounts';
 import backupRoutes, { handleScheduledBackup } from './routes/backups';
+import telegramRoutes from './routes/telegram';
 
 // 扩展 EnvBindings 以包含 ASSETS (Cloudflare Pages/Workers Assets)
 type Bindings = EnvBindings & { ASSETS: { fetch: (req: Request) => Promise<Response> } };
@@ -34,6 +35,7 @@ app.use('*', secureHeaders({
         imgSrc: CSP_POLICY.IMAGES,     // 使用 config.ts 中的配置
         connectSrc: CSP_POLICY.CONNECT,// 使用 config.ts 中的配置
         fontSrc: ["'self'", "data:"],
+        frameSrc: CSP_POLICY.FRAMES,   // 使用 config.ts 中的配置
         workerSrc: ["'self'", "blob:"], // 允许 Service Worker
         objectSrc: ["'none'"], // 禁止 Flash 等插件
     },
@@ -46,6 +48,7 @@ app.get('/api', (c) => c.text('🔐 2FA Secure Manager API is running!'));
 app.route('/api/oauth', authRoutes);
 app.route('/api/accounts', accountsRoutes);
 app.route('/api/backups', backupRoutes);
+app.route('/api/telegram', telegramRoutes); // 挂载 Telegram Webhook 路由
 
 // 4. API 404 处理 (必须在静态资源 fallback 之前，确保 API 路径返回 JSON)
 app.all('/api/*', (c) => {

@@ -31,7 +31,14 @@ export class NodeLocProvider extends BaseOAuthProvider {
         return { url: `https://www.nodeloc.com/oauth-provider/authorize?${params.toString()}` };
     }
 
-    async handleCallback(code: string, _codeVerifier?: string): Promise<OAuthUserInfo> {
+    async handleCallback(params: string | URLSearchParams, _codeVerifier?: string): Promise<OAuthUserInfo> {
+        // 兼容处理：如果是 URLSearchParams，提取 code；如果是 string，直接使用
+        const code = typeof params === 'string' ? params : params.get('code');
+
+        if (!code) {
+            throw new AppError('NodeLoc OAuth callback missing code', 400);
+        }
+
         const clientId = this.env.OAUTH_NODELOC_CLIENT_ID;
         const clientSecret = this.env.OAUTH_NODELOC_CLIENT_SECRET;
         const redirectUri = this.env.OAUTH_NODELOC_REDIRECT_URI;

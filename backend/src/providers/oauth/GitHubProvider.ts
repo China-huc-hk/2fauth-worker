@@ -26,7 +26,14 @@ export class GitHubProvider extends BaseOAuthProvider {
         return { url: `https://github.com/login/oauth/authorize?${params.toString()}` };
     }
 
-    async handleCallback(code: string, _codeVerifier?: string): Promise<OAuthUserInfo> {
+    async handleCallback(params: string | URLSearchParams, _codeVerifier?: string): Promise<OAuthUserInfo> {
+        // 兼容处理：如果是 URLSearchParams，提取 code；如果是 string，直接使用
+        const code = typeof params === 'string' ? params : params.get('code');
+        
+        if (!code) {
+            throw new AppError('GitHub OAuth callback missing code', 400);
+        }
+
         // 1. 使用 Code 换取 Access Token
         const tokenResponse = await fetch('https://github.com/login/oauth/access_token', {
             method: 'POST',

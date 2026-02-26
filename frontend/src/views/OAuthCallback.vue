@@ -41,7 +41,15 @@ onMounted(async () => {
   const code = route.query.code
   const state = route.query.state
   const error = route.query.error
-  const providerId = localStorage.getItem('oauth_provider') || 'github'
+  const hash = route.query.hash // Telegram 特有参数
+  
+  // 1. 智能识别 Provider
+  // 优先使用路由参数 (如 /callback/telegram)，其次检测 Telegram 特征，最后使用缓存
+  let providerId = route.params.provider
+  if (!providerId) {
+    if (hash) providerId = 'telegram'
+    else providerId = localStorage.getItem('oauth_provider') || 'github'
+  }
   
   // 优化：优先从缓存读取提供商名称，避免不必要的网络请求
   try {
@@ -63,32 +71,57 @@ onMounted(async () => {
     return
   }
 
-  if (!code || !state) {
-    errorMsg.value = 'URL 缺少必要的授权凭证参数'
-    return
+  // 2. 参数校验 (区分 Telegram 和标准 OAuth)
+  let payload = {}
+  
+  if (providerId === 'telegram') {
+    if (!hash) {
+      errorMsg.value = 'Telegram 登录缺少签名参数'
+      return
+    }
+    // Telegram 将所有 Query 参数传给后端验签
+    payload = { ...route.query }
+  } else {
+    if (!code || !state) {
+      errorMsg.value = 'URL 缺少必要的授权凭证参数'
+      return
+    }
+
+    // 🛡️ 前端 State 校验：防止 CSRF 攻击
+    const savedState = localStorage.getItem('oauth_state')
+    if (!savedState || savedState !== state) {
+      errorMsg.value = '安全警告：State 校验失败，请求可能被篡改'
+      return
+    }
+    
+    const codeVerifier = localStorage.getItem('oauth_code_verifier')
+    payload = { code, state, codeVerifier }
   }
 
-  // 🛡️ 前端 State 校验：防止 CSRF 攻击
-  const savedState = localStorage.getItem('oauth_state')
-  const codeVerifier = localStorage.getItem('oauth_code_verifier')
-
-  if (!savedState || savedState !== state) {
-    errorMsg.value = '安全警告：State 校验失败，请求可能被篡改'
-    return
-  }
   localStorage.removeItem('oauth_state') // 校验通过后立即清除，防止重放
   localStorage.removeItem('oauth_provider')
   localStorage.removeItem('oauth_code_verifier')
 
   try {
+    // 记录开始时间，确保加载动画至少展示一段时间
+    const startTime = Date.now()
+    // 只有 Telegram 才强制等待 1.5s，其他方式保持原速
+    const MIN_DISPLAY_TIME = providerId === 'telegram' ? 1500 : 0
+
     // 关键步骤：把 code 发给后端换取我们自己的 JWT
     const response = await fetch(`/api/oauth/callback/${providerId}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ code, state, codeVerifier })
+      body: JSON.stringify(payload)
     })
 
     const data = await response.json()
+
+    // 计算耗时，如果过快则强制等待，优化用户体验
+    const elapsed = Date.now() - startTime
+    if (elapsed < MIN_DISPLAY_TIME) {
+      await new Promise(resolve => setTimeout(resolve, MIN_DISPLAY_TIME - elapsed))
+    }
 
     if (data.success) {
       // 登录成功！Token 已写入 httpOnly Cookie

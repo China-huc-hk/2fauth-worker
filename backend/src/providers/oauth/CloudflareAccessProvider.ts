@@ -80,7 +80,14 @@ export class CloudflareAccessProvider extends BaseOAuthProvider {
         return { url, codeVerifier: verifier };
     }
 
-    async handleCallback(code: string, codeVerifier?: string): Promise<OAuthUserInfo> {
+    async handleCallback(params: string | URLSearchParams, codeVerifier?: string): Promise<OAuthUserInfo> {
+        // 兼容处理：如果是 URLSearchParams，提取 code；如果是 string，直接使用
+        const code = typeof params === 'string' ? params : params.get('code');
+
+        if (!code) {
+            throw new AppError('Cloudflare Access OAuth callback missing code', 400);
+        }
+
         const clientId = this.env.OAUTH_CLOUDFLARE_CLIENT_ID;
         const clientSecret = this.env.OAUTH_CLOUDFLARE_CLIENT_SECRET;
         const redirectUri = this.env.OAUTH_CLOUDFLARE_REDIRECT_URI;

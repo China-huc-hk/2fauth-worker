@@ -8,23 +8,23 @@
       </div>
 
       <div class="action-container">
-        <el-button
-          v-for="provider in providers"
-          :key="provider.id"
-          type="primary"
-          size="large"
-          class="oauth-btn"
-          :style="{ backgroundColor: provider.color, borderColor: provider.color }"
-          :loading="loadingProvider === provider.id"
-          :disabled="!!loadingProvider && loadingProvider !== provider.id"
-          @click="handleLogin(provider.id)"
-        >
-          <template #icon>
-            <el-icon v-if="provider.icon"><span v-html="provider.icon" style="display: flex;"></span></el-icon>
-            <el-icon v-else><Platform /></el-icon>
-          </template>
-          通过 {{ provider.name }} 授权登录
-        </el-button>
+        <template v-for="provider in providers" :key="provider.id">
+          <el-button
+            type="primary"
+            size="large"
+            class="oauth-btn"
+            :style="{ backgroundColor: provider.color, borderColor: provider.color }"
+            :loading="loadingProvider === provider.id"
+            :disabled="!!loadingProvider && loadingProvider !== provider.id"
+            @click="handleLogin(provider.id)"
+          >
+            <template #icon>
+              <el-icon v-if="provider.icon"><span v-html="provider.icon" style="display: flex;"></span></el-icon>
+              <el-icon v-else><Platform /></el-icon>
+            </template>
+            通过 {{ provider.name }} 授权登录
+          </el-button>
+        </template>
       </div>
 
       <div class="footer-tips">
@@ -42,9 +42,12 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { Lock, Platform } from '@element-plus/icons-vue'
+import { userState } from '../states/user'
 
+const router = useRouter()
 const loadingProvider = ref(null)
 const providers = ref([])
 const CACHE_KEY = 'oauth_providers_cache'

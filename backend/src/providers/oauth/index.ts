@@ -4,6 +4,7 @@ import { GitHubProvider } from './GitHubProvider';
 import { CloudflareAccessProvider } from './CloudflareAccessProvider';
 import { NodeLocProvider } from './NodeLocProvider';
 import { GiteeProvider } from './GiteeProvider';
+import { TelegramProvider } from './TelegramProvider';
 
 export function getOAuthProvider(providerId: string, env: EnvBindings): BaseOAuthProvider {
     switch (providerId.toLowerCase()) {
@@ -15,6 +16,8 @@ export function getOAuthProvider(providerId: string, env: EnvBindings): BaseOAut
             return new CloudflareAccessProvider(env);
         case 'nodeloc':
             return new NodeLocProvider(env);
+        case 'telegram':
+            return new TelegramProvider(env);
         default:
             throw new AppError(`Provider '${providerId}' is not supported`, 400);
     }
@@ -27,6 +30,7 @@ export function getAvailableProviders(env: EnvBindings) {
     const cloudflareProvider = new CloudflareAccessProvider(env);
     const nodelocProvider = new NodeLocProvider(env);
     const giteeProvider = new GiteeProvider(env);
+    const telegramProvider = new TelegramProvider(env);
 
     if (env.OAUTH_GITHUB_CLIENT_ID && env.OAUTH_GITHUB_CLIENT_SECRET) {
         providers.push({
@@ -37,12 +41,12 @@ export function getAvailableProviders(env: EnvBindings) {
         });
     }
 
-    if (env.OAUTH_GITEE_CLIENT_ID && env.OAUTH_GITEE_CLIENT_SECRET) {
+    if (env.OAUTH_TELEGRAM_BOT_TOKEN && env.OAUTH_TELEGRAM_BOT_NAME) {
         providers.push({
-            id: giteeProvider.id,
-            name: giteeProvider.name,
-            icon: giteeProvider.icon,
-            color: giteeProvider.color,
+            id: telegramProvider.id,
+            name: telegramProvider.name,
+            icon: telegramProvider.icon,
+            color: telegramProvider.color,
         });
     }
 
@@ -52,6 +56,15 @@ export function getAvailableProviders(env: EnvBindings) {
             name: cloudflareProvider.name,
             icon: cloudflareProvider.icon,
             color: cloudflareProvider.color,
+        });
+    }
+
+    if (env.OAUTH_GITEE_CLIENT_ID && env.OAUTH_GITEE_CLIENT_SECRET) {
+        providers.push({
+            id: giteeProvider.id,
+            name: giteeProvider.name,
+            icon: giteeProvider.icon,
+            color: giteeProvider.color,
         });
     }
 

@@ -12,7 +12,16 @@ const auth = new Hono<{ Bindings: EnvBindings, Variables: { user: any } }>();
 // ==========================================
 auth.get('/providers', (c) => {
     const providers = getAvailableProviders(c.env);
-    return c.json({ success: true, providers });
+    // 注入 Telegram Bot Name 给前端 Widget 使用
+    const enhancedProviders = providers.map(p => {
+        if (p.id === 'telegram') {
+            // 自动移除可能存在的 @ 前缀，防止 Widget 加载失败
+            const rawName = c.env.OAUTH_TELEGRAM_BOT_NAME || '';
+            return { ...p, botName: rawName.replace(/^@/, '') };
+        }
+        return p;
+    });
+    return c.json({ success: true, providers: enhancedProviders });
 });
 
 // ==========================================
@@ -37,15 +46,26 @@ auth.get('/authorize/:provider', async (c) => {
 // ==========================================
 auth.post('/callback/:provider', async (c) => {
     const providerName = c.req.param('provider');
-    const { code, codeVerifier } = await c.req.json(); // 接收前端传回的 codeVerifier
+    const body = await c.req.json(); // 获取完整 Body
     const env = c.env;
 
-    if (!code) {
-        throw new AppError('Missing OAuth code', 400);
-    }
-
     const provider = getOAuthProvider(providerName, env);
-    const userInfo = await provider.handleCallback(code, codeVerifier);
+
+    // 构造参数：Telegram 需要验证所有字段，其他 Provider 只需要 code
+    let params: string | URLSearchParams;
+    if (providerName === 'telegram') {
+        params = new URLSearchParams();
+        Object.entries(body).forEach(([key, value]) => {
+            if (value !== undefined && value !== null) {
+                params.append(key, String(value));
+            }
+        });
+    } else {
+        if (!body.code) throw new AppError('Missing OAuth code', 400);
+        params = body.code;
+    }
+    
+    const userInfo = await provider.handleCallback(params, body.codeVerifier);
 
     // 严密的安全校验：基于 Email 或 Username 的白名单 (OAUTH_WHITELIST)
     const allowedUsersStr = env.OAUTH_ALLOWED_USERS || '';
@@ -69,7 +89,7 @@ auth.post('/callback/:provider', async (c) => {
         }
 
         if (! isAllowed) {
-            throw new AppError(`Unauthorized user. Email: ${userEmail}, Username: ${username}`, 403);
+            throw new AppError(`Unauthorized user. Email: ${userEmail}, Username: ${userName}`, 403);
         }
     }
 
@@ -83,6 +103,10 @@ auth.post('/callback/:provider', async (c) => {
             provider: userInfo.provider
         }
     };
+
+    if (!env.JWT_SECRET) {
+        throw new AppError('Server configuration error: JWT_SECRET is missing', 500);
+    }
 
     const token = await generateSecureJWT(payload, env.JWT_SECRET);
 
@@ -128,6 +152,10 @@ auth.post('/logout', (c) => {
 // ==========================================
 auth.get('/me', authMiddleware, (c) => {
     const user = c.get('user');
+    // 禁止浏览器缓存此接口，防止登录状态更新不及时
+    c.header('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+    c.header('Pragma', 'no-cache');
+    c.header('Expires', '0');
     return c.json({
         success: true,
         userInfo: user
