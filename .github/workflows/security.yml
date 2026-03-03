@@ -1,0 +1,52 @@
+name: Security Scan
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches: 
+      - main
+  workflow_dispatch:
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+      actions: read
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # 1. 检查代码中的敏感信息 (Gitleaks)
+      - name: Secret Detection
+        uses: gitleaks/gitleaks-action@v2
+        continue-on-error: true
+
+      # 2. 检查依赖包漏洞 (Snyk)
+      - name: Dependency Scan
+        continue-on-error: true
+        run: |
+          npm install -g snyk          
+          echo "Installing backend dependencies..."
+          cd backend && npm install --package-lock-only && cd ..
+          echo "Installing frontend dependencies..."
+          cd frontend && npm install --package-lock-only && cd ..
+          snyk auth ${{ secrets.SNYK_TOKEN }}
+          snyk test --all-projects
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+
+      # 3. 静态代码安全分析 (CodeQL)
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v4
+        with:
+          languages: javascript-typescript
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v4

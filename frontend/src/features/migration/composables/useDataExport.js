@@ -108,7 +108,7 @@ export function useDataExport() {
             // 特殊处理 HTML 报告导出
             if (type === 'html') {
                 const htmlContent = await dataMigrationService.exportAsHtml(vault)
-                downloadBlob(htmlContent, `2fa-backup-report-${new Date().toISOString().split('T')[0]}.html`, 'text/html')
+                downloadBlob(htmlContent, `2fauth-worker-export-html-${new Date().toISOString().split('T')[0]}.html`, 'text/html')
                 ElMessage.success('导出完成！请在浏览器中打开该文件。')
                 isExporting.value = false
                 return
@@ -122,28 +122,28 @@ export function useDataExport() {
             switch (type) {
                 case 'text':
                     mimeType = 'text/plain'
-                    filename = `2fa-export-otpauth-${date}.txt`
+                    filename = `2fauth-worker-export-otpauth-${date}.txt`
                     break
                 case 'csv':
                     mimeType = 'text/csv'
-                    filename = `2fa-export-csv-${date}.csv`
+                    filename = `2fauth-worker-export-csv-${date}.csv`
                     break
                 case 'bwauth':
                     mimeType = 'application/json'
-                    filename = `2fa-export-bwauth-${date}.json`
+                    filename = `2fauth-worker-export-bitwarden-auth-${date}.json`
                     break
                 case '2fas':
                     mimeType = 'application/json'
-                    filename = `2fa-export-2fas-${date}.2fas`
+                    filename = `2fauth-worker-export-2fas-${date}.2fas`
                     break
                 case 'generic_json':
                     mimeType = 'application/json'
-                    filename = `2fa-export-generic-json-${date}.json`
+                    filename = `2fauth-worker-export-generic-json-${date}.json`
                     break
                 default:
                     // Covers 'encrypted', 'json', 'aegis'
                     mimeType = 'application/json'
-                    filename = `2fa-export-${type}-${date}.json`
+                    filename = `2fauth-worker-export-${type}-${date}.json`
                     break
             }
 

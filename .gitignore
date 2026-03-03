@@ -4,6 +4,7 @@ logs
 
 .secrets
 .actrc
+.event
 .vscode/*
 .devcontainer/*
 .test/*

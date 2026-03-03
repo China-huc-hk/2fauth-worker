@@ -9,6 +9,8 @@ jobs:
   rclone:
     name: Secure Backup Pipeline
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     
     env:
       # --- 全局配置 ---
