@@ -43,14 +43,15 @@ export const backupService = {
      * 测试备份源连接
      * @param {string} type - 'webdav' 或 's3'
      * @param {BackupProviderConfig} config
+     * @param {string|number|null} id - 编辑状态下测试连接传递的ID
      * @returns {Promise<{success: boolean}>}
      * @throws {backupError}
      */
-    async testConnection(type, config) {
+    async testConnection(type, config, id = null) {
         try {
             return await request('/api/backups/providers/test', {
                 method: 'POST',
-                body: JSON.stringify({ type, config })
+                body: JSON.stringify({ type, config, id })
             })
         } catch (e) {
             throw new backupError('Failed to test connection', 'CONNECTION_TEST_FAILED', e)

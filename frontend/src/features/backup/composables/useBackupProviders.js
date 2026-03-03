@@ -14,6 +14,8 @@ export function useBackupProviders() {
     const isEditing = ref(false)
     const isTesting = ref(false)
     const isSaving = ref(false)
+    const isEditingWebdavPwd = ref(false)
+    const isEditingS3Secret = ref(false)
 
     const initialFormState = () => ({
         type: 'webdav',
@@ -49,6 +51,8 @@ export function useBackupProviders() {
 
     const openAddDialog = () => {
         isEditing.value = false
+        isEditingWebdavPwd.value = false
+        isEditingS3Secret.value = false
         form.value = initialFormState()
         hasExistingAutoPwd.value = false
         configUseExistingAutoPwd.value = false
@@ -57,6 +61,8 @@ export function useBackupProviders() {
 
     const editProvider = (provider) => {
         isEditing.value = true
+        isEditingWebdavPwd.value = false
+        isEditingS3Secret.value = false
         currentProviderId.value = provider.id
         form.value = JSON.parse(JSON.stringify({
             type: provider.type,
@@ -102,7 +108,11 @@ export function useBackupProviders() {
 
         isTesting.value = true
         try {
-            const res = await backupService.testConnection(form.value.type, form.value.config)
+            const res = await backupService.testConnection(
+                form.value.type,
+                form.value.config,
+                isEditing.value ? currentProviderId.value : null
+            )
             if (res.success) ElMessage.success('连接成功')
         } catch (e) {
             ElMessage.error(e.message || '连接失败')
@@ -153,6 +163,8 @@ export function useBackupProviders() {
         isEditing,
         isTesting,
         isSaving,
+        isEditingWebdavPwd,
+        isEditingS3Secret,
         form,
         hasExistingAutoPwd,
         configUseExistingAutoPwd,

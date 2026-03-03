@@ -53,9 +53,18 @@ export class BackupService {
     async getProvidersList() {
         const results = await this.repository.findAllSettings();
         const key = this.env.ENCRYPTION_KEY || this.env.JWT_SECRET;
+        const MASK = '******';
 
         return await Promise.all(results.map(async (row: any) => {
             const config = await this.processConfigForUsage(row.type, row.config, key);
+
+            if (row.type === 'webdav' && config.password) {
+                config.password = MASK;
+            }
+            if (row.type === 's3' && config.secretAccessKey) {
+                config.secretAccessKey = MASK;
+            }
+
             return {
                 ...row,
                 config,
@@ -98,6 +107,19 @@ export class BackupService {
     async updateProvider(id: number, data: any) {
         const { name, config, type, autoBackup, autoBackupPassword, autoBackupRetain } = data;
         const key = this.env.ENCRYPTION_KEY || this.env.JWT_SECRET;
+        const MASK = '******';
+
+        const currentProvider = await this.db.select().from(backupProviders).where(eq(backupProviders.id, id)).get();
+        if (currentProvider) {
+            const currentConfigBase = await this.processConfigForUsage(currentProvider.type, currentProvider.config, key);
+            if (type === 'webdav' && (config.password === MASK || !config.password)) {
+                config.password = currentConfigBase.password;
+            }
+            if (type === 's3' && (config.secretAccessKey === MASK || !config.secretAccessKey)) {
+                config.secretAccessKey = currentConfigBase.secretAccessKey;
+            }
+        }
+
         const encryptedConfig = await this.processConfigForStorage(type, config, key);
 
         const current = await this.db.select({ autoBackupPassword: backupProviders.autoBackupPassword }).from(backupProviders).where(eq(backupProviders.id, id)).get();
@@ -124,7 +146,23 @@ export class BackupService {
         await this.db.delete(backupProviders).where(eq(backupProviders.id, id)).run();
     }
 
-    async testConnection(type: string, config: any) {
+    async testConnection(type: string, config: any, id?: number) {
+        const MASK = '******';
+        const key = this.env.ENCRYPTION_KEY || this.env.JWT_SECRET;
+
+        if (id) {
+            const currentProvider = await this.db.select().from(backupProviders).where(eq(backupProviders.id, id)).get();
+            if (currentProvider) {
+                const currentConfigBase = await this.processConfigForUsage(currentProvider.type, currentProvider.config, key);
+                if (type === 'webdav' && config.password === MASK) {
+                    config.password = currentConfigBase.password;
+                }
+                if (type === 's3' && config.secretAccessKey === MASK) {
+                    config.secretAccessKey = currentConfigBase.secretAccessKey;
+                }
+            }
+        }
+
         try {
             const provider = await this.getProvider(type, config);
             await provider.testConnection();

@@ -83,7 +83,11 @@
             <el-input v-model="form.config.username" />
           </el-form-item>
           <el-form-item label="密码">
-            <el-input v-model="form.config.password" type="password" show-password />
+            <div v-if="isEditing && !isEditingWebdavPwd" style="display: flex; align-items: center; justify-content: space-between; background-color: var(--el-fill-color-light); padding: 0 15px; border-radius: 4px; border: 1px solid var(--el-border-color); width: 100%; height: 32px;">
+              <span style="font-family: monospace; letter-spacing: 2px;">******</span>
+              <el-button link type="primary" @click="isEditingWebdavPwd = true; form.config.password = ''">修改</el-button>
+            </div>
+            <el-input v-else v-model="form.config.password" type="password" show-password />
           </el-form-item>
           <el-form-item label="保存目录">
             <el-input v-model="form.config.saveDir" placeholder="/2fauth-backups" />
@@ -105,7 +109,11 @@
             <el-input v-model="form.config.accessKeyId" />
           </el-form-item>
           <el-form-item label="Secret Access Key">
-            <el-input v-model="form.config.secretAccessKey" type="password" show-password />
+            <div v-if="isEditing && !isEditingS3Secret" style="display: flex; align-items: center; justify-content: space-between; background-color: var(--el-fill-color-light); padding: 0 15px; border-radius: 4px; border: 1px solid var(--el-border-color); width: 100%; height: 32px;">
+              <span style="font-family: monospace; letter-spacing: 2px;">******</span>
+              <el-button link type="primary" @click="isEditingS3Secret = true; form.config.secretAccessKey = ''">修改</el-button>
+            </div>
+            <el-input v-else v-model="form.config.secretAccessKey" type="password" show-password />
           </el-form-item>
           <el-form-item label="存储路径前缀 (可选)">
             <el-input v-model="form.config.saveDir" placeholder="backups/" />
@@ -202,7 +210,8 @@ const emit = defineEmits(['restore-success'])
 const layoutStore = useLayoutStore()
 
 const {
-  providers, isLoading, showConfigDialog, isEditing, isTesting, isSaving, form,
+  providers, isLoading, showConfigDialog, isEditing, isTesting, isSaving, 
+  isEditingWebdavPwd, isEditingS3Secret, form,
   hasExistingAutoPwd, configUseExistingAutoPwd, fetchProviders, openAddDialog,
   editProvider, testConnection, saveProvider, deleteProvider
 } = useBackupProviders()

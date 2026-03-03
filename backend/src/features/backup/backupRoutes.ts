@@ -37,8 +37,8 @@ backups.delete('/providers/:id', async (c) => {
 
 backups.post('/providers/test', async (c) => {
     const service = new BackupService(c.env);
-    const { type, config } = await c.req.json();
-    await service.testConnection(type, config);
+    const { type, config, id } = await c.req.json();
+    await service.testConnection(type, config, id);
     return c.json({ success: true, message: 'Connection successful' });
 });
 
