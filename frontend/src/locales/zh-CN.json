@@ -280,7 +280,7 @@
         "support_desc": "支持情况说明",
         "ga_auth_desc": "请在 App 内导出\"迁移二维码\"，将截图直接上传 (.png / .jpg)",
         "ms_auth_desc": "Microsoft Authenticator (仅支持 Android)",
-        "ms_auth_detail": "Android 手机导出以下3个文件后,同时上传即可导入：",
+        "ms_auth_detail": "Android 手机导出以下3个文件后,同时选中上传即可导入",
         "batch_import_processing": "📦 批量导入处理中",
         "batch_progress": "{processed} / {total} 任务已完成",
         "decrypt_backup_title": "🔓 解密备份文件",
@@ -372,7 +372,9 @@
         "totp_algo_sha1_default": "SHA1 (默认)",
         "totp_digits": "位数",
         "totp_period": "周期",
-        "totp_scan_qr_title": "扫描二维码"
+        "totp_scan_qr_title": "扫描二维码",
+        "health_check_title": "系统安全体检",
+        "health_check_desc": "检查服务器核心环境安全配置并给出漏洞修复建议"
     },
     "auth": {
         "subtitle": "一站式安全双重认证管理",
@@ -436,12 +438,91 @@
         "oauth_config_incomplete": "OAuth 配置不完整",
         "oauth_api_error": "OAuth API 错误",
         "oauth_token_exchange_failed": "OAuth token 交换失败",
-        "telegram_missing_bot_name": "尚未配置 Telegram Bot 昵称（Bot Name）",
+        "telegram_missing_bot_name": "尚未配置 Telegram Bot Name",
         "telegram_missing_query": "Telegram 提供商需要完整的查询参数，不仅是 code",
         "telegram_missing_bot_token": "尚未配置 Telegram Bot Token",
         "telegram_missing_hash": "缺少哈希签名",
         "telegram_signature_failed": "Telegram 签名验证失败",
         "telegram_login_expired": "Telegram 登录数据已过期",
-        "unsupported_provider": "不支持的提供商"
+        "unsupported_provider": "不支持的提供商",
+        "health_check_failed": "环境配置漏洞警告，系统已被锁定！"
+    },
+    "healthCheck": {
+        "title": "配置安全未达标",
+        "subtitle": "我们检测到当前环境配置存在高危风险或未完成初始化，为了保护您的数据安全，已禁止系统访问。",
+        "passed_title": "体检通过",
+        "passed_subtitle": "太棒了！您的 2FAuth Worker 安全防御体系处于最佳状态。",
+        "go_to_login": "前往登录",
+        "how_to_fix": "如何修复？",
+        "generate_new": "重新生成",
+        "view_docs": "查看相关配置文档",
+        "missing_fields": "缺失以下环境变量：",
+        "passed_checks_title": "检测通过项",
+        "passed_checks": {
+            "encryption_key_passed": "ENCRYPTION_KEY 长度达标",
+            "jwt_secret_passed": "JWT_SECRET 长度达标",
+            "oauth_allow_all_passed": "全局放行已被禁止 (防止任意人员登入)",
+            "allowed_users_passed": "系统已配置有效的管理员邮箱白名单",
+            "oauth_provider_configured": "系统已正确配置至少一套 OAuth 第三方登录"
+        },
+        "issues": {
+            "encryption_key_too_short": {
+                "title": "核心加密密钥合规性错误 (ENCRYPTION_KEY)",
+                "desc": "您当前的环境变量 ENCRYPTION_KEY 为空或长度不足 32 位！这把钥匙用于加密数据库内的所有验证器种子，增加复杂度避免被暴力破解。"
+            },
+            "jwt_secret_too_short": {
+                "title": "会话签名密钥脆弱 (JWT_SECRET)",
+                "desc": "您当前的环境变量 JWT_SECRET 长度不足 32 位，增加复杂度防止黑客伪造身份凭证直接登入系统。"
+            },
+            "oauth_allow_all_enabled": {
+                "title": "致命警告：开启了全局放行访问",
+                "desc": "您当前配置了 OAUTH_ALLOW_ALL=true。这不是演习，此时任何人进入主页都能直接操控您的验证器数据！"
+            },
+            "allowed_users_empty": {
+                "title": "登录白名单为空",
+                "desc": "系统处于锁定保护中，但您没有配置 OAUTH_ALLOWED_USERS。此时没有任何人能够登录本系统。"
+            },
+            "github_config_incomplete": {
+                "title": "GitHub 登录配置不完整",
+                "desc": "GitHub OAuth 配置参数缺失。"
+            },
+            "telegram_config_incomplete": {
+                "title": "Telegram 登录配置不完整",
+                "desc": "Telegram OAuth 配置参数缺失。"
+            },
+            "google_config_incomplete": {
+                "title": "Google 登录配置不完整",
+                "desc": "Google OAuth 配置参数缺失。"
+            },
+            "nodeloc_config_incomplete": {
+                "title": "NodeLoc 登录配置不完整",
+                "desc": "NodeLoc OAuth 配置参数缺失。"
+            },
+            "gitee_config_incomplete": {
+                "title": "Gitee 登录配置不完整",
+                "desc": "Gitee OAuth 配置参数缺失。"
+            },
+            "cloudflare_config_incomplete": {
+                "title": "Cloudflare Access 配置不完整",
+                "desc": "Cloudflare Access OAuth 配置参数缺失。"
+            },
+            "no_provider_configured": {
+                "title": "未配置任何登录方式",
+                "desc": "您必须至少配置一种合法的 OAuth2 登录方式（如 GitHub、Telegram）才能使用系统。"
+            }
+        },
+        "suggestions": {
+            "encryption_key_suggestion": "请复制下方为您预生成的高强度随机密钥。随后前往 Cloudflare 后台 -> Workers 和 Pages -> 2fauth-worker -> 设置 -> 变量和机密，将其填入 ENCRYPTION_KEY。",
+            "jwt_secret_suggestion": "请复制下方为您预生成的高强度随机密钥。前往 Cloudflare 后台 -> Workers 和 Pages -> 2fauth-worker -> 设置 -> 变量和机密, 将其填入 JWT_SECRET",
+            "oauth_allow_all_suggestion": "请立刻前往 Cloudflare 后台 -> Workers 和 Pages -> 2fauth-worker -> 设置 -> 变量和机密，将环境变量 OAUTH_ALLOW_ALL 删除，或将其值修改为 false。",
+            "allowed_users_suggestion": "请在 Cloudflare 后台 -> Workers 和 Pages -> 2fauth-worker -> 设置 -> 变量和机密中添加 OAUTH_ALLOWED_USERS，并填入您在 GitHub(或其它平台)上对应的注册邮箱地址（多个以英文逗号分隔）。",
+            "github_config_suggestion": "请核对获取的 GitHub OAuth Apps 密钥信息，然后前往 Cloudflare 后台 -> Workers 和 Pages -> 2fauth-worker -> 设置 -> 变量和机密，将环境变量 OAUTH_GITHUB_CLIENT_ID、OAUTH_GITHUB_CLIENT_SECRET、OAUTH_GITHUB_REDIRECT_URI 填入",
+            "telegram_config_suggestion": "请在 BotFather 检查机器人配置，确保信息填全，然后前往 Cloudflare 后台 -> Workers 和 Pages -> 2fauth-worker -> 设置 -> 变量和机密，将环境变量 OAUTH_TELEGRAM_BOT_NAME、OAUTH_TELEGRAM_BOT_TOKEN、OAUTH_TELEGRAM_REDIRECT_URI 填入",
+            "google_config_suggestion": "请前往 Google Cloud Console 检查凭据配置，然后前往 Cloudflare 后台 -> Workers 和 Pages -> 2fauth-worker -> 设置 -> 变量和机密，将环境变量 OAUTH_GOOGLE_CLIENT_ID、OAUTH_GOOGLE_CLIENT_SECRET、OAUTH_GOOGLE_REDIRECT_URI 填入",
+            "nodeloc_config_suggestion": "请前往 NodeLoc 面板检查您的开发者凭据，然后前往 Cloudflare 后台 -> Workers 和 Pages -> 2fauth-worker -> 设置 -> 变量和机密，将环境变量 OAUTH_NODELOC_CLIENT_ID、OAUTH_NODELOC_CLIENT_SECRET、OAUTH_NODELOC_REDIRECT_URI 填入",
+            "gitee_config_suggestion": "请核对 Gitee 开发者凭据，然后前往 Cloudflare 后台 -> Workers 和 Pages -> 2fauth-worker -> 设置 -> 变量和机密，将环境变量 OAUTH_GITEE_CLIENT_ID、OAUTH_GITEE_CLIENT_SECRET、OAUTH_GITEE_REDIRECT_URI 填入",
+            "cloudflare_config_suggestion": "需要四位一体的参数：Client ID, Secret, Org Domain, Redirect URI，然后前往 Cloudflare 后台 -> Workers 和 Pages -> 2fauth-worker -> 设置 -> 变量和机密，将环境变量 OAUTH_CLOUDFLARE_CLIENT_ID、OAUTH_CLOUDFLARE_CLIENT_SECRET、OAUTH_CLOUDFLARE_REDIRECT_URI 填入",
+            "no_provider_suggestion": "阅读2Fauth Worker 的 README，挑选最适合您且配置最简单的一种登录方式，按照其说明获取 Client ID 与 Secret 并在云端配置。"
+        }
     }
 }

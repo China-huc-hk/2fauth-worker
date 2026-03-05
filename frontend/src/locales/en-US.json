@@ -372,7 +372,9 @@
         "totp_algo_sha1_default": "SHA-1 (Default)",
         "totp_digits": "Digits",
         "totp_period": "Period",
-        "totp_scan_qr_title": "Scan QR Code"
+        "totp_scan_qr_title": "Scan QR Code",
+        "health_check_title": "System Security Check",
+        "health_check_desc": "Check core environment security configurations and provide repair suggestions"
     },
     "auth": {
         "subtitle": "A Secure 2FA Management Tool",
@@ -442,6 +444,85 @@
         "telegram_missing_hash": "Missing hash signature",
         "telegram_signature_failed": "Telegram signature verification failed",
         "telegram_login_expired": "Telegram login data has expired",
-        "unsupported_provider": "Unsupported provider"
+        "unsupported_provider": "Unsupported provider",
+        "health_check_failed": "Security vulnerability detected! System access is locked."
+    },
+    "healthCheck": {
+        "title": "Intercept: Security Check Failed",
+        "subtitle": "We detected critical vulnerabilities or incomplete initialization in the environment configuration. System access is locked to protect your data.",
+        "passed_title": "Check Passed",
+        "passed_subtitle": "Excellent! Your 2FAuth Worker security defense is operating at optimal conditions.",
+        "go_to_login": "Go to Login",
+        "how_to_fix": "How to Fix?",
+        "generate_new": "Generate New",
+        "view_docs": "View Configuration Docs",
+        "missing_fields": "Missing the following environment variables:",
+        "passed_checks_title": "Passed Checks",
+        "passed_checks": {
+            "encryption_key_passed": "ENCRYPTION_KEY length is sufficient",
+            "jwt_secret_passed": "JWT_SECRET length is sufficient",
+            "oauth_allow_all_passed": "Global Access is successfully blocked",
+            "allowed_users_passed": "Login whitelist accounts are configured",
+            "oauth_provider_configured": "OAuth2 provider is correctly configured"
+        },
+        "issues": {
+            "encryption_key_too_short": {
+                "title": "Encryption Key Compliance Error (ENCRYPTION_KEY)",
+                "desc": "Your ENCRYPTION_KEY is empty or shorter than 32 characters! This key encrypts all vault seeds and is highly susceptible to brute-forcing."
+            },
+            "jwt_secret_too_short": {
+                "title": "Weak Session Secret (JWT_SECRET)",
+                "desc": "Your JWT_SECRET is shorter than 32 characters. Hackers could forge identity credentials and bypass logins."
+            },
+            "oauth_allow_all_enabled": {
+                "title": "CRITICAL: Global Access Enabled",
+                "desc": "OAUTH_ALLOW_ALL=true is active! This is not a drill. Anyone visiting the site can instantly govern all your 2FA data!"
+            },
+            "allowed_users_empty": {
+                "title": "Login Whitelist is Empty",
+                "desc": "The system is locked but OAUTH_ALLOWED_USERS is empty. Nobody can successfully login to this system."
+            },
+            "github_config_incomplete": {
+                "title": "Incomplete GitHub Config",
+                "desc": "You configured GitHub parameters but are missing the Client ID, Secret, or Redirect URI."
+            },
+            "telegram_config_incomplete": {
+                "title": "Incomplete Telegram Config",
+                "desc": "Missing Bot Name or Bot Token."
+            },
+            "google_config_incomplete": {
+                "title": "Incomplete Google Config",
+                "desc": "Missing required parameters."
+            },
+            "nodeloc_config_incomplete": {
+                "title": "Incomplete NodeLoc Config",
+                "desc": "Missing required parameters."
+            },
+            "gitee_config_incomplete": {
+                "title": "Incomplete Gitee Config",
+                "desc": "Missing required parameters."
+            },
+            "cloudflare_config_incomplete": {
+                "title": "Incomplete Cloudflare Config",
+                "desc": "Missing required parameters."
+            },
+            "no_provider_configured": {
+                "title": "No OAuth Provider Configured",
+                "desc": "You must configure at least one active OAuth2 provider (like GitHub or Telegram) to access the UI."
+            }
+        },
+        "suggestions": {
+            "encryption_key_suggestion": "Copy the secure 32-byte key we generated locally below. Paste it into your Cloudflare -> Workers -> Settings -> Variables as ENCRYPTION_KEY.",
+            "jwt_secret_suggestion": "Copy the pre-generated cryptographically secure key below. Set it as your JWT_SECRET in Cloudflare.",
+            "oauth_allow_all_suggestion": "Immediate Action Required: Go to your Cloudflare dashboard and delete the OAUTH_ALLOW_ALL variable, or set it to false.",
+            "allowed_users_suggestion": "Add OAUTH_ALLOWED_USERS in your Cloudflare environment variables, and populate it with your GitHub (or respective platform) registered emails, separated by commas.",
+            "github_config_suggestion": "Verify your GitHub OAuth App secrets and keys.",
+            "telegram_config_suggestion": "Check your BotFather configurations and ensure all tokens are present.",
+            "google_config_suggestion": "Visit the Google Cloud Console and verify credentials.",
+            "nodeloc_config_suggestion": "Visit the NodeLoc Developer Dashboard and verify credentials.",
+            "gitee_config_suggestion": "Verify your Gitee developer credentials.",
+            "cloudflare_config_suggestion": "Four parameters are required: Client ID, Secret, Org Domain, and Redirect URI.",
+            "no_provider_suggestion": "Consult the README to pick the easiest provider. Retrieve the Client ID and Secret and configure them in Cloudflare's dashboard."
+        }
     }
 }

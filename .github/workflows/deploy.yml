@@ -40,25 +40,25 @@ jobs:
       # 准备配置文件
       - name: Prepare Wrangler Config
         env:
-          CONFIG_FILE: ${{ env.WRANGLER_CONFIG || 'wrangler.jsonc' }}
+          CONFIG_FILE: ${{ env.WRANGLER_CONFIG || 'wrangler.toml' }}
         run: |
           cd backend
-          cp wrangler.jsonc wrangler.jsonc.bak
+          cp wrangler.toml wrangler.toml.bak
           
-          if [ "$CONFIG_FILE" != "wrangler.jsonc" ]; then
-            cp "$CONFIG_FILE" wrangler.jsonc
+          if [ "$CONFIG_FILE" != "wrangler.toml" ]; then
+            cp "$CONFIG_FILE" wrangler.toml
           fi
 
       # 注入 D1 数据库配置
       - name: Inject D1 Database ID
         env:
-          CONFIG_FILE: ${{ env.WRANGLER_CONFIG || 'wrangler.jsonc' }}
+          CONFIG_FILE: ${{ env.WRANGLER_CONFIG || 'wrangler.toml' }}
           CLOUDFLARE_D1_DATABASE_ID: ${{ secrets.CLOUDFLARE_D1_DATABASE_ID }}
           CLOUDFLARE_D1_DATABASE_NAME: ${{ secrets.CLOUDFLARE_D1_DATABASE_NAME || '2fauth-db' }}
         run: |
           # 仅替换第一个匹配到的 database_id (对应生产环境配置)，保留 dev 环境配置
-          sed -i "0,/\"database_id\":/s/\"database_id\": \".*\"/\"database_id\": \"$CLOUDFLARE_D1_DATABASE_ID\"/" "backend/wrangler.jsonc"
-          sed -i "0,/\"database_name\":/s/\"database_name\": \".*\"/\"database_name\": \"$CLOUDFLARE_D1_DATABASE_NAME\"/" "backend/wrangler.jsonc"
+          sed -i "0,/database_id =/s/database_id = \".*\"/database_id = \"$CLOUDFLARE_D1_DATABASE_ID\"/" "backend/wrangler.toml"
+          sed -i "0,/database_name =/s/database_name = \".*\"/database_name = \"$CLOUDFLARE_D1_DATABASE_NAME\"/" "backend/wrangler.toml"
 
       # 更新数据库结构
       - name: Update Database Schema
@@ -163,6 +163,6 @@ jobs:
         if: always() 
         run: |
           cd backend
-          if [ -f wrangler.jsonc.bak ]; then
-            mv wrangler.jsonc.bak wrangler.jsonc
+          if [ -f wrangler.toml.bak ]; then
+            mv wrangler.toml.bak wrangler.toml
           fi

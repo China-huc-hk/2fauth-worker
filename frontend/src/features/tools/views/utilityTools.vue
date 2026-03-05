@@ -42,7 +42,7 @@
 
 <script setup>
 import { ref, computed, defineAsyncComponent } from 'vue'
-import { Key, ArrowLeft, Timer, Lock, Camera } from '@element-plus/icons-vue'
+import { Key, ArrowLeft, Timer, Lock, Camera, WarningFilled } from '@element-plus/icons-vue'
 import { i18n } from '@/locales'
 const ToolPassword = defineAsyncComponent(() => import('@/features/tools/components/passwordGenerator.vue'))
 const ToolTimeSync = defineAsyncComponent(() => import('@/features/tools/components/timeSync.vue'))

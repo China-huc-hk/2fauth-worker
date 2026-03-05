@@ -11,6 +11,7 @@ export function getCookie(name) {
 }
 
 let isNavigatingToLogin = false; // 增加防重入锁，避免并发 401 触发无限弹窗和跳转
+let isNavigatingToSecurity = false; // 防重入锁，避免 403 触发无限跳转
 
 export async function request(url, options = {}) {
     const headers = {
@@ -42,6 +43,23 @@ export async function request(url, options = {}) {
         }
 
         const data = await response.json()
+
+        // --- 安全拦截大网 (Security Shield Interceptor) ---
+        // 如果后端检测到环节变量配置危险，抛出全局 403，立刻拦截死并跳转
+        if (response.status === 403 && data.message === 'health_check_failed') {
+            if (!isNavigatingToSecurity && router && router.currentRoute.value.path !== '/health') {
+                isNavigatingToSecurity = true;
+                router.replace('/health').then(() => {
+                    setTimeout(() => { isNavigatingToSecurity = false }, 1000)
+                }).catch(() => {
+                    setTimeout(() => { isNavigatingToSecurity = false }, 1000)
+                })
+            }
+            // 包装特定的错误抛出给 UI (方便 UI 的 catch 处理)
+            const secErr = new Error('Security Check Failed');
+            secErr.data = data.data; // issues 数组
+            throw secErr;
+        }
 
         // 处理 401 Unauthorized (后端统一抛出的 AppError 会被 index.ts 捕获并返回 { code: 401, success: false, message: ...})
         if (response.status === 401 || data.code === 401) {

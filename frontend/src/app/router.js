@@ -23,6 +23,12 @@ const routes = [
     path: '/callback/:provider', // 兼容特定 Provider 的回调路径 (如 /callback/telegram)
     name: 'ProviderCallback',
     component: () => import('@/features/auth/views/oauthCallback.vue')
+  },
+  {
+    path: '/health',
+    name: 'HealthCheck',
+    component: () => import('@/features/health/views/healthCheck.vue'),
+    meta: { guestOnly: false, requiresAuth: false }
   }
 ]
 

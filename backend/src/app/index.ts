@@ -10,6 +10,8 @@ import vaultRoutes from '@/features/vault/vaultRoutes';
 import backupRoutes, { handleScheduledBackup } from '@/features/backup/backupRoutes';
 import telegramRoutes from '@/features/telegram/telegramRoutes';
 import toolsRoutes from '@/features/tools/toolsRoutes';
+import healthRoutes from '@/features/health/healthRoutes';
+import { runHealthCheck } from '@/shared/utils/health';
 
 // 扩展 EnvBindings 以包含 ASSETS (Cloudflare Pages/Workers Assets)
 type Bindings = EnvBindings & { ASSETS: { fetch: (req: Request) => Promise<Response> } };
@@ -45,19 +47,44 @@ app.use('*', secureHeaders({
 // 2. 健康检查接口 (用于测试后端是否正常启动)
 app.get('/api', (c) => c.text('🔐 2FA Secure Manager API is running!'));
 
-// 3. 挂载子路由
+// 3. 全局安全安检拦截器 (Security Shield Middleware)
+app.use('/api/*', async (c, next) => {
+    // 豁免路由: 允许放行 /api/health 系列接口, 允许已登录用户强制登出
+    const path = c.req.path;
+    if (path.startsWith('/api/health') || path === '/api/oauth/logout') {
+        await next();
+        return;
+    }
+
+    // 执行安检
+    const securityResult = runHealthCheck(c.env);
+    if (!securityResult.passed) {
+        // 发现安全环境不合格，阻断此请求
+        return c.json({
+            code: 403,
+            success: false,
+            message: 'health_check_failed',
+            data: securityResult.issues
+        }, 403);
+    }
+
+    await next();
+});
+
+// 4. 挂载子路由
+app.route('/api/health', healthRoutes);
 app.route('/api/oauth', authRoutes);
 app.route('/api/vault', vaultRoutes); // 'accounts' is now 'vault'
 app.route('/api/backups', backupRoutes);
 app.route('/api/telegram', telegramRoutes);
 app.route('/api/tools', toolsRoutes);
 
-// 4. API 404 处理 (必须在静态资源 fallback 之前，确保 API 路径返回 JSON)
+// 5. API 404 处理 (必须在静态资源 fallback 之前，确保 API 路径返回 JSON)
 app.all('/api/*', (c) => {
     return c.json({ success: false, error: 'API Not Found' }, 404);
 });
 
-// 5. 静态资源托管 (让 Hono 接管所有非 API 请求，以便应用 CSP 安全头)
+// 6. 静态资源托管 (让 Hono 接管所有非 API 请求，以便应用 CSP 安全头)
 app.get('*', async (c) => {
     const res = await c.env.ASSETS.fetch(c.req.raw);
     // 关键修复：ASSETS 返回的 Response 可能是不可变的。创建副本以允许 Hono 中间件添加 CSP 头。

@@ -82,7 +82,7 @@ export class AuthService {
     private verifyWhitelist(userInfo: OAuthUserInfo, whitelistFields: string[]) {
         // 如果 explicitly allowed all, 则放行
         const allowAllStr = String(this.env.OAUTH_ALLOW_ALL || '').toLowerCase();
-        if (allowAllStr === 'true' || allowAllStr === '1') {
+        if (allowAllStr === 'true' || allowAllStr === '1' || allowAllStr === '2') {
             return;
         }
 
