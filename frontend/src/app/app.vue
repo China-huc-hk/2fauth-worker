@@ -31,22 +31,23 @@ const checkMobile = () => {
   layoutStore.isMobile = window.innerWidth < 768
 }
 
-const isOffline = ref(false)
-const setOnline = () => { isOffline.value = false }
-const setOffline = () => { isOffline.value = true }
+const userClosedOfflineBanner = ref(false)
+const showOfflineBanner = computed(() => layoutStore.isOffline && !userClosedOfflineBanner.value)
+
+watch(() => layoutStore.isOffline, (offline) => {
+  if (offline) {
+    userClosedOfflineBanner.value = false
+  }
+})
 
 onMounted(() => {
   checkMobile()
-  isOffline.value = !navigator.onLine
+  layoutStore.initNetworkStatus()
   window.addEventListener('resize', checkMobile)
-  window.addEventListener('online', setOnline)
-  window.addEventListener('offline', setOffline)
 })
 
 onBeforeUnmount(() => {
   window.removeEventListener('resize', checkMobile)
-  window.removeEventListener('online', setOnline)
-  window.removeEventListener('offline', setOffline)
 })
 </script>
 
@@ -54,9 +55,16 @@ onBeforeUnmount(() => {
   <el-config-provider :locale="elementLocale">
     <div class="app-container">
       <!-- 方案A: 全局离线横幅 -->
-    <div v-if="isOffline" class="global-offline-banner" style="background-color: #fdf6ec; color: #e6a23c; padding: 10px 15px; text-align: center; font-size: 14px; display: flex; align-items: center; justify-content: center; gap: 6px; border-bottom: 1px solid #faecd8; position: sticky; top: 0; z-index: 9999; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
-      <el-icon><Warning /></el-icon> <span>{{ $t('common.offline_mode') }}</span>
-    </div>
+      <el-alert
+        v-if="showOfflineBanner"
+        :title="$t('common.offline_mode')"
+        type="warning"
+        show-icon
+        center
+        closable
+        class="global-offline-banner"
+        @close="userClosedOfflineBanner = true"
+      />
 
     <!-- 登录页通常不显示头部，可以通过路由 meta 控制，这里简单示例默认显示 -->
     <TheHeader v-if="!route.meta.hideHeader" />

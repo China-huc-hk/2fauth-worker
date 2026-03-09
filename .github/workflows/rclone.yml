@@ -56,7 +56,7 @@ jobs:
     steps:
       # STEP 1: 安装 Rclone
       - name: 🛠️ Setup Tools
-        uses: AnimMouse/setup-rclone@v1
+        uses: AnimMouse/setup-rclone@02a3642a1ad72d5b765f48873141b9f26e9082f1 # v1
         with:
           version: v1.66.0
 

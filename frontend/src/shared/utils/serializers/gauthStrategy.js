@@ -49,8 +49,6 @@ export const gaMigrationStrategy = {
                 let issuer = ''
                 let algorithm = 'SHA1'
                 let digits = 6
-                let type = 'TOTP'
-
                 while (pos < endPos) {
                     const pTag = dataBytes[pos++]
                     const pField = pTag >> 3
@@ -89,8 +87,7 @@ export const gaMigrationStrategy = {
                         const dVal = readVarint()
                         if (dVal === 2) digits = 8
                     } else if (pField === 6 && pWire === 0) {
-                        const tVal = readVarint()
-                        if (tVal === 1) type = 'HOTP'
+                        readVarint()
                     } else {
                         if (pWire === 0) readVarint()
                         else if (pWire === 2) pos += readVarint()

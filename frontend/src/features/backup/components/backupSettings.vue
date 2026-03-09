@@ -1,7 +1,7 @@
 <template>
   <div class="backup-container">
     <!-- 顶部操作 -->
-    <div class="header-actions">
+    <div class="backup-header-actions">
       <h3>{{ $t('backup.management') }}</h3>
       <el-button type="primary" @click="openAddDialog">
         <el-icon><Plus /></el-icon> {{ $t('backup.add_source') }}
@@ -9,23 +9,23 @@
     </div>
 
     <!-- 全局加载状态 -->
-    <div v-if="isLoading && providers.length === 0" class="loading-state" style="display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: 200px; color: var(--el-text-color-secondary);">
-      <el-icon class="is-loading" :size="48" style="margin-bottom: 20px; color: var(--el-color-primary);"><Loading /></el-icon>
-      <p style="font-size: 16px; letter-spacing: 1px;">{{ $t('backup.fetching_sources') }}</p>
+    <div v-if="isLoading && providers.length === 0" class="flex-column flex-center min-h-200 text-secondary">
+      <el-icon class="is-loading mb-20 text-primary" :size="48"><Loading /></el-icon>
+      <p class="text-16 ls-1">{{ $t('backup.fetching_sources') }}</p>
     </div>
 
     <!-- 列表区域 (有数据情况) -->
     <el-row v-else-if="providers.length > 0" :gutter="20">
-      <el-col :xs="24" :sm="12" :md="8" v-for="provider in providers" :key="provider.id" style="margin-bottom: 20px;">
-        <el-card shadow="hover" class="provider-card">
+      <el-col :xs="24" :sm="12" :md="8" v-for="provider in providers" :key="provider.id" class="mb-20">
+        <el-card shadow="hover" class="backup-provider-card">
           <template #header>
-            <div class="card-header">
-              <div class="provider-info">
-                <div class="provider-title">
+            <div class="backup-card-header">
+              <div class="flex flex-items-center">
+                <div class="backup-provider-title flex-wrap">
                   <el-tag size="small" effect="dark" :type="getProviderTypeTag(provider.type)">{{ provider.type.toUpperCase() }}</el-tag>
-                  <span class="provider-name">{{ provider.name }}</span>
+                  <span class="font-bold text-16">{{ provider.name }}</span>
                   <el-tooltip v-if="provider.auto_backup" :content="$t('backup.auto_backup_on')" placement="top">
-                    <el-icon color="#67C23A" size="16" style="cursor: help"><Timer /></el-icon>
+                    <el-icon color="#67C23A" size="16" class="pointer-help"><Timer /></el-icon>
                   </el-tooltip>
                 </div>
               </div>
@@ -37,16 +37,16 @@
           </template>
           
           <div class="card-content">
-            <p class="status-text">
+            <p class="backup-status-text">
               {{ $t('backup.last_backup') }} 
               <span v-if="provider.lastBackupAt">{{ new Date(provider.lastBackupAt).toLocaleString() }}</span>
               <span v-else>{{ $t('backup.never_backed_up') }}</span>
-              <el-tag v-if="provider.lastBackupStatus" size="small" :type="provider.lastBackupStatus === 'success' ? 'success' : 'danger'" style="margin-left: 5px;">
+              <el-tag v-if="provider.lastBackupStatus" size="small" :type="provider.lastBackupStatus === 'success' ? 'success' : 'danger'" class="ml-5">
                 {{ provider.lastBackupStatus }}
               </el-tag>
             </p>
             
-            <div class="action-buttons">
+            <div class="backup-action-buttons">
               <el-button type="success" plain size="small" @click="openBackupDialog(provider)">{{ $t('backup.backup_now') }}</el-button>
               <el-button type="warning" plain size="small" @click="openRestoreDialog(provider)">{{ $t('backup.restore_data') }}</el-button>
             </div>
@@ -57,7 +57,7 @@
     </el-row>
 
     <!-- 空状态 -->
-    <div v-else class="empty-state" style="margin-top: 40px;">
+    <div v-else class="empty-state mt-40">
       <el-empty :description="$t('backup.empty_source')" />
     </div>
 
@@ -90,8 +90,8 @@
             <el-input v-model="form.config.accessKeyId" />
           </el-form-item>
           <el-form-item label="Secret Access Key">
-            <div v-if="isEditing && !isEditingS3Secret" style="display: flex; align-items: center; justify-content: space-between; background-color: var(--el-fill-color-light); padding: 0 15px; border-radius: 4px; border: 1px solid var(--el-border-color); width: 100%; height: 32px;">
-              <span style="font-family: monospace; letter-spacing: 2px;">******</span>
+            <div v-if="isEditing && !isEditingS3Secret" class="flex flex-items-center flex-between bg-fill p-10 rounded-4 border-1 w-full h-32">
+              <span class="font-mono ls-2">******</span>
               <el-button link type="primary" @click="isEditingS3Secret = true; form.config.secretAccessKey = ''">{{ $t('backup.modify') }}</el-button>
             </div>
             <el-input v-else v-model="form.config.secretAccessKey" type="password" show-password />
@@ -104,15 +104,15 @@
         <!-- Telegram 配置 -->
         <template v-if="form.type === 'telegram'">
           <el-form-item :label="$t('backup.telegram_bot_token')">
-            <div v-if="isEditing && !isEditingTelegramToken" style="display: flex; align-items: center; justify-content: space-between; background-color: var(--el-fill-color-light); padding: 0 15px; border-radius: 4px; border: 1px solid var(--el-border-color); width: 100%; height: 32px;">
-              <span style="font-family: monospace; letter-spacing: 2px;">******</span>
+            <div v-if="isEditing && !isEditingTelegramToken" class="flex flex-items-center flex-between bg-fill p-10 rounded-4 border-1 w-full h-32">
+              <span class="font-mono ls-2">******</span>
               <el-button link type="primary" @click="isEditingTelegramToken = true; form.config.botToken = ''">{{ $t('backup.modify') }}</el-button>
             </div>
             <el-input v-else v-model="form.config.botToken" type="password" show-password :placeholder="$t('backup.telegram_bot_token_placeholder')" />
           </el-form-item>
           <el-form-item :label="$t('backup.telegram_chat_id')">
             <el-input v-model="form.config.chatId" :placeholder="$t('backup.telegram_chat_id_placeholder')" />
-            <div class="form-tip">
+            <div class="backup-form-tip">
               <strong>{{ $t('backup.telegram_chat_id_tip_title') }}</strong><br/>
               <span>{{ $t('backup.telegram_chat_id_tip_1') }}</span><br/>
               <span>{{ $t('backup.telegram_chat_id_tip_2') }}</span>
@@ -129,8 +129,8 @@
             <el-input v-model="form.config.username" />
           </el-form-item>
           <el-form-item :label="$t('backup.password')">
-            <div v-if="isEditing && !isEditingWebdavPwd" style="display: flex; align-items: center; justify-content: space-between; background-color: var(--el-fill-color-light); padding: 0 15px; border-radius: 4px; border: 1px solid var(--el-border-color); width: 100%; height: 32px;">
-              <span style="font-family: monospace; letter-spacing: 2px;">******</span>
+            <div v-if="isEditing && !isEditingWebdavPwd" class="flex flex-items-center flex-between bg-fill p-10 rounded-4 border-1 w-full h-32">
+              <span class="font-mono ls-2">******</span>
               <el-button link type="primary" @click="isEditingWebdavPwd = true; form.config.password = ''">{{ $t('backup.modify') }}</el-button>
             </div>
             <el-input v-else v-model="form.config.password" type="password" show-password />
@@ -147,21 +147,21 @@
         <el-form-item :label="$t('backup.encrypt_password')" v-if="form.autoBackup">
           <div v-if="isEditing && hasExistingAutoPwd" style="margin-bottom: 15px; width: 100%;">
             <el-radio-group v-model="configUseExistingAutoPwd">
-              <el-radio :label="true">{{ $t('backup.keep_old_pwd') }}</el-radio>
-              <el-radio :label="false">{{ $t('backup.set_new_pwd') }}</el-radio>
+              <el-radio :value="true">{{ $t('backup.keep_old_pwd') }}</el-radio>
+              <el-radio :value="false">{{ $t('backup.set_new_pwd') }}</el-radio>
             </el-radio-group>
           </div>
-          <div v-if="!(isEditing && hasExistingAutoPwd && configUseExistingAutoPwd)" style="width: 100%;">
+          <div v-if="!(isEditing && hasExistingAutoPwd && configUseExistingAutoPwd)" class="w-full">
             <el-input v-model="form.autoBackupPassword" type="password" show-password :placeholder="$t('backup.input_encrypt_pwd')" />
-            <div class="form-tip"><span style="color: #F56C6C;">*</span> {{ $t('backup.password_length_req') }}</div>
+            <div class="backup-form-tip"><span class="text-danger">*</span> {{ $t('backup.password_length_req') }}</div>
           </div>
-          <div v-else class="success-tip">
+          <div v-else class="backup-success-tip">
             <el-icon><CircleCheck /></el-icon><span>{{ $t('backup.continue_use_old_pwd') }}</span>
           </div>
         </el-form-item>
         <el-form-item :label="$t('backup.retain_count_label')" v-if="form.autoBackup">
           <el-input-number v-model="form.autoBackupRetain" :min="0" :max="999" :label="$t('backup.retain_count_label')"></el-input-number>
-          <div class="form-tip" style="width: 100%">{{ $t('backup.retain_zero_tip') }}</div>
+          <div class="backup-form-tip w-full">{{ $t('backup.retain_zero_tip') }}</div>
         </el-form-item>
       </el-form>
       <template #footer>
@@ -172,12 +172,12 @@
 
     <!-- 备份弹窗 -->
     <el-dialog v-model="showBackupDialog" :title="$t('backup.encrypted_backup')" :width="layoutStore.isMobile ? '90%' : '400px'">
-      <el-alert :title="$t('common.data_security')" type="info" :description="$t('backup.backup_security_tip')" show-icon :closable="false" style="margin-bottom: 20px;" />
+      <el-alert :title="$t('common.data_security')" type="info" :description="$t('backup.backup_security_tip')" show-icon :closable="false" class="mb-20" />
       
       <div v-if="currentActionProvider?.auto_backup" style="margin-bottom: 15px;">
         <el-radio-group v-model="useAutoPassword">
-          <el-radio :label="true">{{ $t('backup.use_auto_pwd') }}</el-radio>
-          <el-radio :label="false">{{ $t('backup.use_new_pwd') }}</el-radio>
+          <el-radio :value="true">{{ $t('backup.use_auto_pwd') }}</el-radio>
+          <el-radio :value="false">{{ $t('backup.use_new_pwd') }}</el-radio>
         </el-radio-group>
       </div>
 
@@ -209,7 +209,7 @@
 
     <!-- 恢复确认弹窗 -->
     <el-dialog v-model="showRestoreConfirmDialog" :title="$t('backup.decrypt_restore')" :width="layoutStore.isMobile ? '90%' : '400px'">
-      <el-alert :title="$t('common.warning')" type="warning" :description="$t('backup.restore_warning')" show-icon :closable="false" style="margin-bottom: 15px;" />
+      <el-alert :title="$t('common.warning')" type="warning" :description="$t('backup.restore_warning')" show-icon :closable="false" class="mb-15" />
       <el-input v-model="restorePassword" type="password" show-password :placeholder="$t('backup.input_restore_pwd')" />
       <template #footer>
         <el-button @click="showRestoreConfirmDialog = false">{{ $t('common.cancel') }}</el-button>
@@ -252,67 +252,3 @@ const formatSize = (bytes) => {
   return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
 }
 </script>
-
-<style scoped>
-.backup-container {
-  padding: 10px;
-}
-
-.header-actions {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-}
-
-.provider-card {
-  transition: transform 0.2s;
-}
-
-.provider-card:hover {
-  transform: translateY(-5px);
-}
-
-.card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.provider-title {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.provider-name {
-  font-weight: bold;
-  font-size: 16px;
-}
-
-.status-text {
-  font-size: 13px;
-  color: var(--el-text-color-secondary);
-  margin-bottom: 20px;
-}
-
-.action-buttons {
-  display: flex;
-  gap: 10px;
-}
-
-.form-tip {
-  font-size: 12px;
-  color: var(--el-text-color-secondary);
-  margin-top: 5px;
-  line-height: 1.4;
-}
-
-.success-tip {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  color: var(--el-color-success);
-  font-size: 13px;
-}
-</style>

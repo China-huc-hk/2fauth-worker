@@ -257,7 +257,7 @@ docker run -d --name 2fauth-worker \
 4.  **端到端隔离**：前端生成的敏感操作逻辑经过严格过滤，严禁任何 XSS (跨站脚本) 攻击。
 5.  **隐私第一**：本项目不包含任何追踪代码、分析工具或第三方统计插件。你的数据只属于你。
 
-> 📊 [**点击查看由 GitHub Actions 自动生成的实时安全审计报告**](https://github.com/nap0o/2fauth-worker/blob/security-audit/SECURITY.md)
+> 📊 [**点击查看由 GitHub Actions 自动生成的实时安全审计报告**](https://github.com/nap0o/2fauth-worker/blob/security-audit/README.md)
 
 ---
 

@@ -1,4 +1,4 @@
-import { eq, inArray, desc, like, or, and, sql } from 'drizzle-orm';
+import { eq, inArray, desc, like, or, sql } from 'drizzle-orm';
 import { vault, type VaultItem, type NewVaultItem } from '@/shared/db/schema';
 
 export class VaultRepository {

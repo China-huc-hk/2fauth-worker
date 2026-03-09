@@ -70,7 +70,7 @@
           <div class="user-detail">
             <div class="user-name-row">
               <span class="user-name">{{ authUserStore.userInfo?.username }}</span>
-              <i class="status-dot" :class="{ 'is-online': authUserStore.userInfo?.online !== false }"></i>
+              <i class="status-dot" :class="{ 'is-online': !layoutStore.isOffline }"></i>
             </div>
             <div class="user-provider" v-if="authUserStore.userInfo?.provider">
               {{ authUserStore.userInfo?.provider }}
@@ -199,71 +199,3 @@ const handleLogout = async () => {
 }
 </script>
 
-<style scoped>
-.user-info-card {
-  margin: 0px 20px 0px 20px;
-  padding-bottom: 20px;
-  border-bottom: 0.2px solid var(--el-border-color-lighter);
-}
-
-.user-card-content {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-}
-
-.user-avatar {
-  flex-shrink: 0;
-  border: 2px solid var(--el-color-primary-light-8);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-.user-detail {
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-}
-
-.user-name-row {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  margin-bottom: 2px;
-}
-
-.user-name {
-  font-size: 15px;
-  font-weight: 600;
-  color: var(--el-text-color-primary);
-  line-height: 1.2;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.status-dot {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background-color: #909399; /* 默认灰色 */
-  display: inline-block;
-  flex-shrink: 0;
-}
-
-.status-dot.is-online {
-  background-color: #67C23A; /* 在线绿色 */
-  box-shadow: 0 0 4px rgba(103, 194, 58, 0.5);
-}
-
-.user-provider {
-  font-size: 11px;
-  color: var(--el-text-color-secondary);
-  background: var(--el-fill-color);
-  padding: 1px;
-  border-radius: 2px;
-  display: inline-block;
-  width: fit-content;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-</style>

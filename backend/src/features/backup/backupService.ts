@@ -1,4 +1,4 @@
-import { eq, desc } from 'drizzle-orm';
+import { eq } from 'drizzle-orm';
 import { EnvBindings, AppError } from '@/app/config';
 import { BackupRepository } from '@/shared/db/repositories/backupRepository';
 import { encryptData, decryptData, encryptBackupFile } from '@/shared/utils/crypto';

@@ -1,5 +1,5 @@
 import { Hono } from 'hono';
-import { EnvBindings, AppError } from '@/app/config';
+import { EnvBindings } from '@/app/config';
 import { authMiddleware } from '@/shared/middleware/auth';
 import { VaultService } from '@/features/vault/vaultService';
 import { VaultRepository } from '@/shared/db/repositories/vaultRepository';
@@ -18,8 +18,6 @@ vault.use('/*', authMiddleware);
 
 // 获取所有账户 (分页+搜索)
 vault.get('/', async (c) => {
-    const user = c.get('user');
-
     // 解析查询参数
     const page = parseInt(c.req.query('page') || '1', 10);
     const limit = parseInt(c.req.query('limit') || '12', 10);
@@ -51,7 +49,6 @@ vault.post('/', async (c) => {
 
 // 更新账户
 vault.put('/:id', async (c) => {
-    const user = c.get('user');
     const id = c.req.param('id');
     const data = await c.req.json();
     const service = getService(c);
@@ -61,7 +58,6 @@ vault.put('/:id', async (c) => {
 
 // 删除账户
 vault.delete('/:id', async (c) => {
-    const user = c.get('user');
     const id = c.req.param('id');
     const service = getService(c);
     await service.deleteAccount(id);
@@ -70,7 +66,6 @@ vault.delete('/:id', async (c) => {
 
 // 批量删除账户
 vault.post('/batch-delete', async (c) => {
-    const user = c.get('user');
     const { ids } = await c.req.json();
     if (!Array.isArray(ids) || ids.length === 0) {
         return c.json({ success: false, error: 'ids must be a non-empty array' }, 400);
@@ -82,7 +77,6 @@ vault.post('/batch-delete', async (c) => {
 
 // 导出账户
 vault.post('/export', async (c) => {
-    const user = c.get('user');
     const service = getService(c);
     const { type, password } = await c.req.json();
 

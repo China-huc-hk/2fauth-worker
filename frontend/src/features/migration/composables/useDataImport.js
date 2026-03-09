@@ -15,7 +15,6 @@ export function useDataImport(emitFn) {
     const showDecryptDialog = ref(false)
     const importPassword = ref('')
     const importingJobs = ref(0)
-    const isImporting = computed(() => importingJobs.value > 0)
     const isDecrypting = ref(false)
     const isDialogHandled = ref(false)
 

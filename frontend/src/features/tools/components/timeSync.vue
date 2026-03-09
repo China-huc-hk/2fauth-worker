@@ -9,7 +9,7 @@
         :description="syncStatus.desc"
         show-icon
         :closable="false"
-        style="margin-bottom: 20px;"
+        class="mb-20"
       />
 
       <!-- 时钟仪表盘 -->
@@ -30,7 +30,7 @@
         <p>{{ $t('tools.network_latency') }}: <span>{{ rtt !== null ? `${rtt} ms` : '--' }}</span></p>
       </div>
 
-      <el-button type="primary" size="large" :loading="isSyncing" @click="syncTime" style="width: 100%; margin-top: 20px;">
+      <el-button type="primary" size="large" :loading="isSyncing" @click="syncTime" class="w-full mt-20">
         <el-icon><Refresh /></el-icon> {{ $t('tools.check_now') }}
       </el-button>
     </div>

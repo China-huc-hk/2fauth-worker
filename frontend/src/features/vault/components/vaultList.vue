@@ -1,15 +1,15 @@
 <template>
-  <div class="vault-list-wrapper" style="min-height: 400px;">
+  <div class="vault-list-wrapper min-h-400">
     <div class="vault-content">
       <!-- 移动端偏移 60px (Header2), PC端偏移 61px (Header1) -->
       <el-affix :offset="layoutStore.isMobile ? 60 : 61" @change="(val) => isToolbarFixed = val">
-        <div class="toolbar" :class="{ 'is-affixed': isToolbarFixed }" style="margin-bottom: 20px; display: flex; gap: 15px; align-items: center; justify-content: space-between; flex-wrap: wrap;">
-        <div style="display: flex; align-items: center; gap: 10px; flex: 1;">
+        <div class="vault-list-toolbar mb-20 flex gap-15 flex-items-center flex-between flex-wrap" :class="{ 'is-affixed': isToolbarFixed }">
+        <div class="flex flex-items-center gap-10 flex-1">
           <el-input 
             v-model="searchQuery" 
             :placeholder="$t('common.search_placeholder')" 
             clearable 
-            style="max-width: 400px;" 
+            class="max-w-400"
           >
             <template #prefix>
               <el-icon v-if="isFetching && searchQuery" class="is-loading"><Loading /></el-icon>
@@ -18,7 +18,7 @@
           </el-input>
         </div>
         
-        <div class="batch-actions" style="display: flex; align-items: center; gap: 10px;">
+        <div class="batch-actions flex flex-items-center gap-10">
           <template v-if="selectedIds.length > 0">
             <span class="batch-text">{{ $t('common.selected_items', { count: selectedIds.length }) }}</span>
             <el-button type="danger" plain @click="handleBulkDelete" :loading="isBulkDeleting">
@@ -32,10 +32,9 @@
       </el-affix>
 
       <!-- 1. 加载状态 -->
-      <div v-if="(isInitializing || isLoading || isFetching) && vault.length === 0" class="loading-state" style="display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: 400px; color: var(--el-text-color-secondary);">
-
-        <el-icon class="is-loading" :size="48" style="margin-bottom: 20px; color: var(--el-color-primary);"><Loading /></el-icon>
-        <p style="font-size: 16px; letter-spacing: 1px;">{{ $t('common.loading_data') }}</p>
+      <div v-if="(isInitializing || isLoading || isFetching) && vault.length === 0" class="flex-column flex-center min-h-400 text-secondary">
+        <el-icon class="is-loading mb-20 text-primary" :size="48"><Loading /></el-icon>
+        <p class="text-16 ls-1">{{ $t('common.loading_data') }}</p>
       </div>
 
       <!-- 2. 空状态 (明确加载完毕 + 数据真正为空 + 无搜索) -->
@@ -47,14 +46,13 @@
 
       <!-- 3. 数据列表 (已解锁) -->
       <div v-else
-        class="list-container" 
-        style="min-height: 200px;"
+        class="list-container min-h-200" 
         v-infinite-scroll="handleLoadMore"
         :infinite-scroll-disabled="isLoadMoreDisabled"
         :infinite-scroll-distance="100"
       >
         <el-row :gutter="20" v-if="vault.length > 0">
-          <el-col :xs="24" :sm="12" :md="8" :lg="6" v-for="vaultItem in vault" :key="vaultItem.id" style="margin-bottom: 20px;">
+          <el-col :xs="24" :sm="12" :md="8" :lg="6" v-for="vaultItem in vault" :key="vaultItem.id" class="mb-20">
           <el-card class="vault-card" :class="{ 'is-selected': selectedIds.includes(vaultItem.id) }" shadow="hover">
             <div class="card-header">
               <div class="service-info">
@@ -73,7 +71,7 @@
                     <el-dropdown-item command="edit">
                       <el-icon><Edit /></el-icon> {{ $t('common.edit') }}
                     </el-dropdown-item>
-                    <el-dropdown-item command="delete" style="color: #F56C6C;">
+                    <el-dropdown-item command="delete" class="text-danger">
                       <el-icon><Delete /></el-icon> {{ $t('common.delete') }}
                     </el-dropdown-item>
                   </el-dropdown-menu>
@@ -108,10 +106,10 @@
           </el-col>
         </el-row>
 
-        <div v-if="isFetchingNextPage" style="text-align: center; padding: 20px; color: var(--el-text-color-secondary);">
+        <div v-if="isFetchingNextPage" class="text-center p-20 text-secondary">
           <el-icon class="is-loading"><Loading /></el-icon> {{ $t('common.loading_more') }}
         </div>
-        <div v-if="!hasNextPage && vault.length > 0" style="text-align: center; padding: 20px; color: var(--el-text-color-secondary); font-size: 12px;">
+        <div v-if="!hasNextPage && vault.length > 0" class="text-center p-20 text-secondary text-12">
           {{ $t('common.no_more_accounts') }}
         </div>
 
@@ -251,37 +249,3 @@ defineExpose({ fetchVault })
 
 onMounted(handleUnlocked)
 </script>
-
-<style scoped>
-/* 搜索栏吸顶过渡动画 */
-.toolbar {
-  transition: padding 0.3s ease, background-color 0.3s ease;
-  box-sizing: border-box;
-}
-
-/* 共有吸顶属性 */
-.toolbar.is-affixed {
-  z-index: 2000;
-  margin-bottom: 0 !important;
-  background-color: var(--el-bg-color-page);
-}
-
-/* 移动端吸顶效果：全屏、背景、边框 */
-@media (max-width: 767px) {
-  .toolbar.is-affixed {
-    width: 100vw !important;
-    margin-left: -20px !important; /* 抵消 el-main 的内边距 */
-    padding: 14px 20px !important;
-    border-radius: 0 !important;
-  }
-}
-
-/* PC 端吸顶效果：保持原有宽度，无背景色和下边框 */
-@media (min-width: 768px) {
-  .toolbar.is-affixed {
-    border-bottom: none !important;
-    padding: 20px 0px !important;
-  }
-}
-</style>
-

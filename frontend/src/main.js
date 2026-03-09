@@ -1,6 +1,5 @@
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
-import { ElMessage } from 'element-plus'
 import 'element-plus/dist/index.css'
 import { registerSW } from 'virtual:pwa-register'
 import 'element-plus/theme-chalk/dark/css-vars.css'

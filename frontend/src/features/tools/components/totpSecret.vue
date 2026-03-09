@@ -91,7 +91,7 @@
               <div class="totp-timer" :class="{ 'urgent': remaining < 5 }">
                 <el-icon><Timer /></el-icon> {{ remaining }}s {{ $t('tools.refresh_after') }}
               </div>
-              <el-button type="primary" plain size="small" @click="copyToClipboard(currentCode, $t('vault.copy_success'))" :disabled="!currentCode" style="margin-top: 10px;">
+              <el-button type="primary" plain size="small" @click="copyToClipboard(currentCode, $t('vault.copy_success'))" :disabled="!currentCode" class="mt-10">
                 <el-icon><CopyDocument /></el-icon> {{ $t('common.copy') }}
               </el-button>
             </div>
@@ -107,16 +107,16 @@
           <el-collapse>
             <el-collapse-item :title="$t('tools.advanced_settings')" name="1">
               <div class="advanced-row">
-                <el-select v-model="algorithm" @change="updateAll('settings')" :placeholder="$t('tools.totp_algorithm')" style="flex: 1">
+                <el-select v-model="algorithm" @change="updateAll('settings')" :placeholder="$t('tools.totp_algorithm')" class="flex-1">
                   <el-option :label="$t('tools.totp_algo_sha1_default')" value="SHA-1" />
                   <el-option label="SHA-256" value="SHA-256" />
                   <el-option label="SHA-512" value="SHA-512" />
                 </el-select>
-                <el-select v-model="digits" @change="updateAll('settings')" :placeholder="$t('tools.totp_digits')" style="width: 100px">
+                <el-select v-model="digits" @change="updateAll('settings')" :placeholder="$t('tools.totp_digits')" class="w-100">
                   <el-option :label="$t('vault.digits_6')" :value="6" />
                   <el-option :label="$t('vault.digits_8')" :value="8" />
                 </el-select>
-                <el-select v-model="period" @change="updateAll('settings')" :placeholder="$t('tools.totp_period')" style="width: 100px">
+                <el-select v-model="period" @change="updateAll('settings')" :placeholder="$t('tools.totp_period')" class="w-100">
                   <el-option :label="$t('vault.period_30s')" :value="30" />
                   <el-option :label="$t('vault.period_60s')" :value="60" />
                 </el-select>
@@ -131,15 +131,15 @@
             <span class="label-text">{{ $t('tools.time_offset') }} (Time Travel): {{ timeOffset > 0 ? '+' : '' }}{{ timeOffset }}s</span>
             <el-button link type="primary" @click="adjustTime(0, true)" size="small">{{ $t('tools.reset_time') }}</el-button>
           </div>
-          <el-button-group style="width: 100%; display: flex;">
-            <el-button @click="adjustTime(-period)" style="flex:1" size="small">{{ $t('tools.prev_period') }}</el-button>
-            <el-button @click="adjustTime(period)" style="flex:1" size="small">{{ $t('tools.next_period') }}</el-button>
+          <el-button-group class="w-full flex">
+            <el-button @click="adjustTime(-period)" class="flex-1" size="small">{{ $t('tools.prev_period') }}</el-button>
+            <el-button @click="adjustTime(period)" class="flex-1" size="small">{{ $t('tools.next_period') }}</el-button>
           </el-button-group>
         </div>
 
         <!-- Save Button -->
-        <div class="config-section" style="margin-top: 20px;">
-          <el-button type="success" size="large" @click="saveToVault" style="width: 100%;" :loading="isSaving">
+        <div class="config-section mt-20">
+          <el-button type="success" size="large" @click="saveToVault" class="w-full" :loading="isSaving">
             <el-icon><CircleCheck /></el-icon> {{ $t('tools.save_to_vault') }}
           </el-button>
         </div>

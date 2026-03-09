@@ -7,12 +7,12 @@
         <p class="subtitle">{{ $t('auth.subtitle') }}</p>
       </div>
 
-      <div v-if="isFetchingProviders" class="loading-state" style="display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: 150px; color: var(--el-text-color-secondary);">
-        <el-icon class="is-loading" :size="38" style="margin-bottom: 20px; color: var(--el-color-primary);"><Loading /></el-icon>
-        <p style="font-size: 15px; letter-spacing: 1px;">{{ $t('common.loading_data') }}</p>
+      <div v-if="isFetchingProviders" class="flex-column flex-center min-h-150 text-secondary">
+        <el-icon class="is-loading mb-20 text-primary" :size="38"><Loading /></el-icon>
+        <p class="text-15 ls-1">{{ $t('common.loading_data') }}</p>
       </div>
 
-      <div v-else class="action-container" style="min-height: 100px; border-radius: 8px;">
+      <div v-else class="action-container min-h-100 rounded-8">
         <template v-for="provider in providers" :key="provider.id">
           <el-button
             type="primary"

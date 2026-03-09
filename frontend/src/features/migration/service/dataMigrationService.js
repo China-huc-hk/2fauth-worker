@@ -1,7 +1,7 @@
 import { vaultService } from '@/features/vault/service/vaultService'
 import { encryptDataWithPassword, decryptDataWithPassword } from '@/shared/utils/crypto'
 import { parseOtpUri } from '@/shared/utils/totp'
-import { tryParseJSON, base64ToBytes } from '@/shared/utils/encoding'
+import { tryParseJSON } from '@/shared/utils/encoding'
 import { gaMigrationStrategy } from '@/shared/utils/serializers/gauthStrategy'
 import { csvStrategy } from '@/shared/utils/serializers/csvStrategy'
 import { aegisStrategy } from '@/shared/utils/serializers/aegisStrategy'
@@ -507,7 +507,6 @@ export const dataMigrationService = {
             if (!actualSalt || !actualIv || !actualCipher) {
                 // 简单规则失败时回退到旧的排列检测逻辑
                 let found = false
-                const allBufs = bufs.slice()
                 const permutations = [
                     { salt: bufs[1], iv: bufs[2], cipher: bufs[0], name: 'bufs[1]=salt, bufs[2]=iv, bufs[0]=cipher' },
                     {

@@ -1,5 +1,5 @@
 import { defineAsyncComponent, h } from 'vue'
-import { ElLoading, ElEmpty, ElButton } from 'element-plus'
+import { ElEmpty, ElButton } from 'element-plus'
 
 /**
  * 增强的异步组件工厂函数

@@ -1,4 +1,4 @@
-import { ref, shallowRef, computed, watch, triggerRef } from 'vue'
+import { ref, shallowRef, computed, watch } from 'vue'
 import { useInfiniteQuery, useQueryClient } from '@tanstack/vue-query'
 import { useVaultStore } from '@/features/vault/store/vaultStore'
 import { vaultService } from '@/features/vault/service/vaultService'

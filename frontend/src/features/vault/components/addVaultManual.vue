@@ -1,9 +1,9 @@
 <template>
   <div class="add-vault-wrapper">
     <div class="tab-card-wrapper">
-      <h2 style="text-align: center; margin-bottom: 20px;">{{ $t('vault.manual_title') }}</h2>
-      <div style="max-width: 100%; margin: 0 auto;">
-        <el-form :model="newVault" label-position="top" :rules="rules" ref="addFormRef" style="padding: 10px 0;">
+      <h2 class="text-center mb-20">{{ $t('vault.manual_title') }}</h2>
+      <div class="m-auto w-full">
+        <el-form :model="newVault" label-position="top" :rules="rules" ref="addFormRef" class="vault-manual-form-wrapper">
           <el-form-item :label="$t('common.service_name')" prop="service">
             <el-input v-model="newVault.service" :placeholder="$t('vault.input_service_placeholder')" />
           </el-form-item>
@@ -20,7 +20,7 @@
           <el-row :gutter="20">
             <el-col :span="8">
               <el-form-item :label="$t('vault.digits_label')" prop="digits">
-                <el-select v-model="newVault.digits" style="width: 100%">
+                <el-select v-model="newVault.digits" class="w-full">
                   <el-option :label="$t('vault.digits_6')" :value="6" />
                   <el-option :label="$t('vault.digits_8')" :value="8" />
                 </el-select>
@@ -28,7 +28,7 @@
             </el-col>
             <el-col :span="8">
               <el-form-item :label="$t('vault.period_label')" prop="period">
-                <el-select v-model="newVault.period" style="width: 100%">
+                <el-select v-model="newVault.period" class="w-full">
                   <el-option :label="$t('vault.period_30s')" :value="30" />
                   <el-option :label="$t('vault.period_60s')" :value="60" />
                 </el-select>
@@ -36,7 +36,7 @@
             </el-col>
             <el-col :span="8">
               <el-form-item :label="$t('vault.algorithm_label')" prop="algorithm">
-                <el-select v-model="newVault.algorithm" style="width: 100%">
+                <el-select v-model="newVault.algorithm" class="w-full">
                   <el-option :label="$t('vault.algo_sha1')" value="SHA1" />
                   <el-option label="SHA256" value="SHA256" />
                   <el-option label="SHA512" value="SHA512" />
@@ -47,8 +47,8 @@
           <el-form-item :label="$t('common.category_optional')" prop="category">
             <el-input v-model="newVault.category" :placeholder="$t('vault.input_category_placeholder')" />
           </el-form-item>
-          <el-form-item style="margin-top: 30px;">
-            <el-button type="primary" :loading="submitting" @click="submitAddVault" style="width: 100%;" size="large">{{ $t('vault.confirm_add_btn') }}</el-button>
+          <el-form-item class="mt-30">
+            <el-button type="primary" :loading="submitting" @click="submitAddVault" class="vault-manual-submit-btn" size="large">{{ $t('vault.confirm_add_btn') }}</el-button>
           </el-form-item>
         </el-form>
       </div>

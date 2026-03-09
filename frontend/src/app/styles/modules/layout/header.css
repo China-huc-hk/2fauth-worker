@@ -1,0 +1,74 @@
+/* TheHeader.vue */
+.header {
+    background: var(--el-bg-color);
+    box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.05);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+    height: 60px;
+    flex-shrink: 0;
+    z-index: 100;
+    position: sticky;
+    top: 0;
+    border-bottom: 1px solid var(--el-border-color-light);
+}
+
+.logo,
+.user-actions,
+.user-profile {
+    display: flex;
+    align-items: center;
+}
+
+.logo h2 {
+    margin: 0;
+    color: var(--el-text-color-primary);
+    font-size: 20px;
+}
+
+.user-actions {
+    gap: 20px;
+}
+
+.user-profile {
+    gap: 10px;
+    background: var(--el-fill-color-light);
+    padding: 4px 15px 4px 4px;
+    border-radius: 20px;
+}
+
+.username {
+    font-weight: 600;
+    color: var(--el-text-color-regular);
+    font-size: 14px;
+}
+
+.menu-icon {
+    color: var(--el-text-color-regular);
+}
+
+@media (max-width: 768px) {
+    .header {
+        padding: 0 15px;
+    }
+
+    .logo h2 {
+        font-size: 18px;
+    }
+}
+
+/* --- TheHeader Button & Link --- */
+.header-menu-btn {
+    margin-right: 10px;
+    padding: 5px 8px !important;
+    border: 1px solid var(--el-border-color) !important;
+    height: auto !important;
+}
+
+.header-home-link {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    color: inherit;
+}

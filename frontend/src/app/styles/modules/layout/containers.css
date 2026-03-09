@@ -1,0 +1,67 @@
+/* App.vue */
+.app-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+}
+
+@media (max-width: 768px) {
+    .app-container {
+        height: auto;
+        min-height: 100vh;
+        overflow: visible;
+    }
+}
+
+main {
+    flex: 1;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+@media (max-width: 768px) {
+    main {
+        overflow: visible;
+    }
+}
+
+/* Home.vue */
+.home-container {
+    height: 100%;
+    background-color: var(--el-bg-color-page);
+}
+
+.main-body {
+    height: 100%;
+    display: flex;
+    overflow: hidden;
+}
+
+@media (max-width: 768px) {
+
+    .home-container,
+    .main-body {
+        height: auto;
+        min-height: 100vh;
+        overflow: visible;
+    }
+}
+
+.main-content {
+    width: 100%;
+    background-color: var(--el-bg-color-page);
+    /* 原为 auto，修改为保留滚动空间防止因高度变化产生的抖动，或直接将滚动条悬浮覆盖 */
+    overflow-y: overlay;
+    scrollbar-gutter: stable;
+}
+
+@media (max-width: 768px) {
+    .main-content {
+        overflow: visible !important;
+        overflow-y: visible !important;
+        overflow-x: visible !important;
+        scrollbar-gutter: auto;
+    }
+}

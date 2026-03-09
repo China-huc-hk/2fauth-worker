@@ -10,7 +10,7 @@
     <div class="controls">
       <div class="control-row">
         <span class="label">{{ $t('tools.length') }}: {{ length }}</span>
-        <el-slider v-model="length" :min="6" :max="64" @input="generate" style="flex: 1; margin: 0 15px;" />
+        <el-slider v-model="length" :min="6" :max="64" @input="generate" class="flex-1 mx-15" />
       </div>
       
       <div class="control-row checkboxes">
@@ -21,7 +21,7 @@
       </div>
     </div>
 
-    <el-button type="primary" size="large" @click="generate" style="width: 100%; margin-top: 20px;">
+    <el-button type="primary" size="large" @click="generate" class="w-full mt-20">
       <el-icon><Refresh /></el-icon> {{ $t('tools.regenerate') }}
     </el-button>
   </div>

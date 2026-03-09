@@ -7,7 +7,7 @@ import { EnvBindings, CSP_POLICY } from '@/app/config';
 // 稍后我们会在这里引入拆分好的路由模块
 import authRoutes from '@/features/auth/authRoutes';
 import vaultRoutes from '@/features/vault/vaultRoutes';
-import backupRoutes, { handleScheduledBackup } from '@/features/backup/backupRoutes';
+import backupRoutes from '@/features/backup/backupRoutes';
 import telegramRoutes from '@/features/telegram/telegramRoutes';
 import toolsRoutes from '@/features/tools/toolsRoutes';
 import healthRoutes from '@/features/health/healthRoutes';

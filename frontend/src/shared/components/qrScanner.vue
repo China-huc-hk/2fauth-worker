@@ -1,6 +1,6 @@
 <template>
   <div class="qr-scanner-container">
-    <el-radio-group v-model="scannerMode" style="margin-bottom: 20px; width: 100%; display: flex; justify-content: center;" @change="handleModeChange">
+    <el-radio-group v-model="scannerMode" class="mb-20 w-full flex flex-center" @change="handleModeChange">
       <el-radio-button label="camera">{{ $t('tools.scanner_camera') }}</el-radio-button>
       <el-radio-button label="image">{{ $t('tools.scanner_image') }}</el-radio-button>
     </el-radio-group>
@@ -17,7 +17,7 @@
         <el-icon :size="48" color="#909399"><Camera /></el-icon>
         <p>{{ $t('tools.camera_click_to_open') }}</p>
       </div>
-      <el-button :type="isScanning ? 'danger' : 'primary'" @click="toggleCamera" style="margin-top: 15px; width: 100%;" :loading="isStarting">
+      <el-button :type="isScanning ? 'danger' : 'primary'" @click="toggleCamera" class="mt-15 w-full" :loading="isStarting">
         {{ isScanning ? $t('tools.camera_stop') : $t('tools.camera_open') }}
       </el-button>
     </div>
@@ -31,7 +31,7 @@
           <p>{{ $t('tools.image_placeholder') }}</p>
         </div>
       </div>
-      <input type="file" ref="fileInputRef" accept="image/*" style="display: none" @change="handleFileUpload" />
+      <input type="file" ref="fileInputRef" accept="image/*" class="display-none" @change="handleFileUpload" />
     </div>
   </div>
 </template>

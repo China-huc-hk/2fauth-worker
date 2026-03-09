@@ -1,16 +1,16 @@
 <template>
   <div class="data-import-wrapper">
     <div class="tab-card-wrapper">
-      <div style="text-align: center; margin-bottom: 30px;">
+      <div class="text-center mb-30">
         <h2>{{ $t('migration.center_title') }}</h2>
-        <p style="color: var(--el-text-color-secondary);">{{ $t('migration.center_desc') }}</p>
+        <p class="text-secondary">{{ $t('migration.center_desc') }}</p>
       </div>
 
-      <div style="max-width: 100%; margin: 0 auto;">
+      <div class="max-w-100p m-auto">
         
         <!-- 统一的拖拽上传区域 -->
         <el-upload
-          class="import-upload"
+          class="migration-import-upload"
           drag
           action="#"
           multiple
@@ -24,20 +24,20 @@
             <p><span v-html="$t('migration.drag_drop_tip')"></span></p>
           </div>
           <template #tip>
-            <div class="import-tips">
+            <div class="migration-import-tips">
               <h4>{{ $t('migration.support_desc') }}</h4>
-              <div class="format-groups">
-                <div class="format-group">
+              <div class="migration-format-groups">
+                <div class="migration-format-group">
                   <h4>📁 {{ $t('migration.system_backup_format') }}</h4>
-                  <div class="tags">
+                  <div class="migration-tags">
                     <el-tag type="info" effect="light"><el-icon><Lock /></el-icon> {{ $t('migration.encrypted_backup_json') }}</el-tag>
                     <el-tag type="info" effect="light"><el-icon><Unlock /></el-icon> {{ $t('migration.plaintext_backup_json') }}</el-tag>
                   </div>
                 </div>
 
-                <div class="format-group">
+                <div class="migration-format-group">
                   <h4>📱 {{ $t('migration.mobile_app_format') }}</h4>
-                  <div class="tags">
+                  <div class="migration-tags">
                     <el-tag type="info" effect="light"><icon2FAS /> 2FAS (.2fas)</el-tag>
                     <el-tag type="info" effect="light"><iconAegis /> Aegis (.json/.txt)</el-tag>
                     <el-tag type="info" effect="light"><iconBitwarden /> Bitwarden Auth (.json/.csv)</el-tag>
@@ -46,11 +46,11 @@
                     <el-tag type="info" effect="light"><iconGoogleAuth /> Google Auth (.png/.jpg)</el-tag>
                     <el-tag type="info" effect="light"><iconMicrosoftAuth /> Microsoft Auth (PhoneFactor)</el-tag>
                   </div>
-                  <div class="ga-tip">
+                  <div class="migration-ga-tip">
                     <span>Google Authenticator</span>
                     <p>{{ $t('migration.ga_auth_desc') }}</p>
                   </div>
-                  <div class="ms-tip">
+                  <div class="migration-ms-tip">
                     <span>{{ $t('migration.ms_auth_desc') }}</span>
                     <p>{{ $t('migration.ms_auth_detail') }}:<br />
                       <code>/data/data/com.azure.authenticator/databases/PhoneFactor</code><br />
@@ -60,9 +60,9 @@
                   </div>
                 </div>
 
-                <div class="format-group">
+                <div class="migration-format-group">
                   <h4>📄 {{ $t('migration.generic_format') }}</h4>
-                  <div class="tags">
+                  <div class="migration-tags">
                     <el-tag type="info" effect="light"><el-icon><Document /></el-icon> {{ $t('migration.generic_json') }}</el-tag>
                     <el-tag type="info" effect="light"><el-icon><Tickets /></el-icon> OTPAuth URI (.txt)</el-tag>
                     <el-tag type="info" effect="light"><el-icon><Grid /></el-icon> {{ $t('migration.spreadsheet_csv') }}</el-tag>
@@ -85,16 +85,16 @@
       :close-on-press-escape="false"
       :show-close="false"
     >
-      <div style="text-align: center; padding: 10px 0;">
+      <div class="text-center py-10">
         <el-progress 
           type="dashboard" 
           :percentage="batchProgressPercent" 
           :status="batchProgressPercent === 100 ? 'success' : ''" 
         />
-        <h3 style="margin-top: 20px;">
+        <h3 class="mt-20">
           {{ $t('migration.batch_progress', { processed: batchProcessedJobs, total: batchTotalJobs }) }}
         </h3>
-        <p style="color: var(--el-text-color-secondary); margin-top: 10px;">
+        <p class="text-secondary mt-10">
           {{ batchCurrentTaskName }}
         </p>
       </div>
@@ -102,11 +102,11 @@
 
     <!-- 加密文件密码输入弹窗 -->
     <el-dialog v-model="showDecryptDialog" :title="$t('migration.decrypt_backup_title')" width="400px" @close="handleDecryptDialogClose" destroy-on-close>
-      <el-alert v-if="currentImportType === 'aegis_encrypted'" :title="$t('migration.detect_aegis')" type="warning" :closable="false" style="margin-bottom: 15px;" />
-      <el-alert v-else-if="currentImportType === 'proton_encrypted'" :title="$t('migration.detect_proton')" type="warning" :closable="false" style="margin-bottom: 15px;" />
-      <el-alert v-else-if="currentImportType === '2fas_encrypted'" :title="$t('migration.detect_2fas')" type="warning" :closable="false" style="margin-bottom: 15px;" />
-      <el-alert v-else-if="currentImportType === 'ente_encrypted'" :title="$t('migration.detect_ente')" type="warning" :closable="false" style="margin-bottom: 15px;" />
-      <el-alert v-else :title="$t('migration.detect_system')" type="success" :closable="false" style="margin-bottom: 15px;" />
+      <el-alert v-if="currentImportType === 'aegis_encrypted'" :title="$t('migration.detect_aegis')" type="warning" :closable="false" class="mb-15" />
+      <el-alert v-else-if="currentImportType === 'proton_encrypted'" :title="$t('migration.detect_proton')" type="warning" :closable="false" class="mb-15" />
+      <el-alert v-else-if="currentImportType === '2fas_encrypted'" :title="$t('migration.detect_2fas')" type="warning" :closable="false" class="mb-15" />
+      <el-alert v-else-if="currentImportType === 'ente_encrypted'" :title="$t('migration.detect_ente')" type="warning" :closable="false" class="mb-15" />
+      <el-alert v-else :title="$t('migration.detect_system')" type="success" :closable="false" class="mb-15" />
       <el-form label-position="top">
         <el-form-item :label="$t('migration.input_decrypt_pwd_label')">
           <el-input v-model="importPassword" type="password" show-password @keyup.enter="submitEncryptedData" :placeholder="$t('migration.input_decrypt_pwd_placeholder')" />
@@ -152,115 +152,3 @@ const {
 
 </script>
 
-<style scoped>
-.import-upload {
-  margin-top: 20px;
-}
-:deep(.el-upload-dragger) {
-  padding: 40px;
-  background-color: var(--el-fill-color-light);
-  border-color: var(--el-border-color);
-}
-:deep(.el-upload-dragger:hover) {
-  border-color: var(--el-color-primary);
-}
-:deep(.el-icon--upload) {
-  font-size: 48px;
-  color: var(--el-text-color-secondary);
-  margin-bottom: 20px;
-}
-
-/* 提示区美化 */
-.import-tips {
-  text-align: left;
-  margin-top: 25px;
-  background-color: var(--el-fill-color-lighter);
-  padding: 0px 20px 20px 20px;
-  border-radius: 8px;
-  border: 1px dashed var(--el-border-color);
-}
-
-.format-groups {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-}
-
-.format-group h4 {
-  margin: 0 0 10px 0;
-  color: var(--el-text-color-primary);
-  font-size: 14px;
-  font-weight: 600;
-}
-
-.tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-bottom: 8px;
-}
-
-.tags span.el-tag {
-  padding: 4px 8px; /* 减小内边距，使其不那么像按钮 */
-  height: auto;
-  color: var(--el-text-color-regular);
-  cursor: default; /* 明确鼠标状态不是可点击的 */
-  border-color: transparent; /* 去除边框，使其更像高亮文本 */
-  background-color: var(--el-fill-color-light); /* 更浅的背景色 */
-}
-
-.tags span i.el-icon {
-  display: inline-flex;
-  flex-wrap: wrap;
-  margin-right: 4px; /* 图标和文字之间增加一点点间距 */
-}
-
-.ga-tip {
-  background-color: var(--el-color-primary-light-9);
-  padding: 10px 12px;
-  border-radius: 6px;
-  border-left: 3px solid var(--el-color-primary);
-  margin-top: 10px;
-}
-
-.ga-tip span {
-  font-weight: 600;
-  font-size: 13px;
-  color: var(--el-color-primary);
-  display: block;
-  margin-bottom: 4px;
-}
-
-.ga-tip p {
-  margin: 0;
-  font-size: 12px;
-  color: var(--el-text-color-regular);
-  line-height: 1.5;
-}
-
-.ms-tip {
-  background-color: var(--el-color-success-light-9);
-  padding: 10px 12px;
-  border-radius: 6px;
-  border-left: 3px solid var(--el-color-success);
-  margin-top: 10px;
-}
-
-.ms-tip span {
-  font-weight: 600;
-  font-size: 13px;
-  color: var(--el-color-success);
-  display: block;
-  margin-bottom: 4px;
-}
-
-.ms-tip p {
-  margin: 0;
-  font-size: 12px;
-  color: var(--el-color-regular);
-  line-height: 1.5;
-}
-.ms-tip p code {
-  word-wrap: break-word;
-}
-</style>

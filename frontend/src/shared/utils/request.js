@@ -1,6 +1,7 @@
 import { ElMessage } from 'element-plus'
 // Removed router import to solve circular dependency and facilitate physical redirects
 import { useAuthUserStore } from '@/features/auth/store/authUserStore'
+import { useLayoutStore } from '@/shared/stores/layoutStore'
 import { i18n } from '@/locales'
 
 // 辅助函数：从 document.cookie 中安全地读取指定的 cookie 值
@@ -11,7 +12,6 @@ export function getCookie(name) {
 }
 
 let isNavigatingToLogin = false; // 增加防重入锁，避免并发 401 触发无限弹窗和跳转
-let isNavigatingToSecurity = false; // 防重入锁，避免 403 触发无限跳转
 
 export async function request(url, options = {}) {
     const headers = {
@@ -27,7 +27,8 @@ export async function request(url, options = {}) {
     // --- 离线拦截逻辑 ---
     // 拦截破坏性/写操作，在无网络时提供温和提示并短路执行
     const method = (options.method || 'GET').toUpperCase();
-    if (!navigator.onLine && ['POST', 'PUT', 'DELETE', 'PATCH'].includes(method)) {
+    const layoutStore = useLayoutStore()
+    if (layoutStore.isOffline && ['POST', 'PUT', 'DELETE', 'PATCH'].includes(method)) {
         if (!options.silent) {
             ElMessage.warning(i18n.global.t('api_errors.offline'));
         }

@@ -5,10 +5,10 @@
       <QrScanner @scan-success="handleScanSuccess" />
 
       <!-- Result Display -->
-      <div v-if="scanResult" class="result-section" style="margin-top: 20px;">
+      <div v-if="scanResult" class="result-section mt-20">
         <el-divider content-position="left">{{ $t('tools.qr_result') }}</el-divider>
         <el-input v-model="scanResult" type="textarea" :rows="3" readonly resize="none" />
-        <el-button type="success" plain style="width: 100%; margin-top: 10px;" @click="copyResult">
+        <el-button type="success" plain class="w-full mt-10" @click="copyResult">
           <el-icon><CopyDocument /></el-icon> {{ $t('common.copy') }}
         </el-button>
       </div>

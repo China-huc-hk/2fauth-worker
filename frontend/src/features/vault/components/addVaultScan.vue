@@ -1,10 +1,10 @@
 <template>
   <div class="add-vault-wrapper">
     <div class="tab-card-wrapper">
-      <h2 style="text-align: center; margin-bottom: 20px;">📷 {{ $t('vault.scan_qr') }}</h2>
-      <div style="max-width: 100%; margin: 0 auto;">
-        <div style="text-align: center; margin-bottom: 20px; margin-top: 10px;">
-          <p style="color: var(--el-text-color-secondary);">{{ $t('vault.scan_camera_tip') }}</p>
+      <h2 class="text-center mb-20">📷 {{ $t('vault.scan_qr') }}</h2>
+      <div class="max-w-600 m-auto">
+        <div class="text-center mb-20 mt-10">
+          <p class="text-secondary">{{ $t('vault.scan_camera_tip') }}</p>
         </div>
         <QrScanner @scan-success="handleScanSuccess" />
       </div>
@@ -35,21 +35,21 @@ const handleScanSuccess = async (uri) => {
     }
 
     await ElMessageBox.confirm(
-      h('div', { style: 'text-align: left; background: var(--el-fill-color-light); padding: 16px; border-radius: 8px; border: 1px solid var(--el-border-color-lighter); margin-top: 10px;' }, [
-        h('div', { style: 'margin-bottom: 12px; display: flex; align-items: center;' }, [
-           h('span', { style: 'color: var(--el-text-color-secondary); width: 70px; flex-shrink: 0;' }, t('vault.service_label')),
-           h('span', { style: 'font-weight: 600; font-size: 15px; color: var(--el-text-color-primary); word-break: break-all;' }, acc.service || t('vault.unknown_service'))
+      h('div', { class: 'confirmation-box' }, [
+        h('div', { class: 'confirmation-row' }, [
+           h('span', { class: 'confirmation-label' }, t('vault.service_label')),
+           h('span', { class: 'confirmation-value' }, acc.service || t('vault.unknown_service'))
         ]),
-        h('div', { style: 'margin-bottom: 12px; display: flex; align-items: center;' }, [
-           h('span', { style: 'color: var(--el-text-color-secondary); width: 70px; flex-shrink: 0;' }, t('vault.account_label')),
-           h('span', { style: 'font-family: monospace; font-size: 14px; background: var(--el-fill-color-darker); padding: 4px 8px; border-radius: 6px; color: var(--el-color-primary); word-break: break-all;' }, acc.account || t('vault.unnamed_account'))
+        h('div', { class: 'confirmation-row' }, [
+           h('span', { class: 'confirmation-label' }, t('vault.account_label')),
+           h('span', { class: 'confirmation-value mono' }, acc.account || t('vault.unnamed_account'))
         ]),
-        h('div', { style: 'display: flex; align-items: center;' }, [
-           h('span', { style: 'color: var(--el-text-color-secondary); width: 70px; flex-shrink: 0;' }, t('vault.param_label')),
-           h('div', { style: 'display: flex; gap: 8px; flex-wrap: wrap;' }, [
-               h('span', { style: 'background: var(--el-color-info-light-9); color: var(--el-color-info); border: 1px solid var(--el-color-info-light-7); padding: 2px 8px; border-radius: 4px; font-size: 12px;' }, acc.algorithm || 'SHA1'),
-               h('span', { style: 'background: var(--el-color-success-light-9); color: var(--el-color-success); border: 1px solid var(--el-color-success-light-7); padding: 2px 8px; border-radius: 4px; font-size: 12px;' }, `${acc.digits || 6}${t('vault.digits_suffix')}`),
-               h('span', { style: 'background: var(--el-color-warning-light-9); color: var(--el-color-warning); border: 1px solid var(--el-color-warning-light-7); padding: 2px 8px; border-radius: 4px; font-size: 12px;' }, `${acc.period || 30}${t('vault.period_suffix')}`)
+        h('div', { class: 'confirmation-row' }, [
+           h('span', { class: 'confirmation-label' }, t('vault.param_label')),
+           h('div', { class: 'confirmation-tags' }, [
+               h('span', { class: 'confirmation-tag confirmation-tag-info' }, acc.algorithm || 'SHA1'),
+               h('span', { class: 'confirmation-tag confirmation-tag-success' }, `${acc.digits || 6}${t('vault.digits_suffix')}`),
+               h('span', { class: 'confirmation-tag confirmation-tag-warning' }, `${acc.period || 30}${t('vault.period_suffix')}`)
            ])
         ])
       ]),

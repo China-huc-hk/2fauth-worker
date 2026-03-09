@@ -4,11 +4,11 @@
 
       <template #header>
         <div class="health-header">
-          <h2 class="alert-title">
+           <h2 class="alert-title text-24 font-600 text-primary ls-1 mt-15 mb-0">
             <el-icon :size="24" color="var(--el-color-danger)"><WarningFilled /></el-icon>
             {{ $t('healthCheck.title') }}
           </h2>
-          <el-alert type="warning" :closable="false" center class="subtitle">{{ $t('healthCheck.subtitle') }}</el-alert>
+          <el-alert type="warning" :closable="false" center class="subtitle my-15 p-10">{{ $t('healthCheck.subtitle') }}</el-alert>
         </div>
       </template>
 
@@ -61,7 +61,7 @@
                         </el-button>
                       </template>
                     </el-input>
-                    <el-button type="success" plain size="small" @click="generateNewKey(issue.field)" class="mt-2">
+                    <el-button type="success" plain size="small" @click="generateNewKey(issue.field)" class="mt-10">
                        <el-icon><Refresh /></el-icon> {{ $t('healthCheck.generate_new') }}
                     </el-button>
                   </div>
@@ -75,7 +75,7 @@
                 <!-- 默认建议展示 -->
                 <div v-else class="fix-action">
                    <p>{{ $t(`healthCheck.suggestions.${issue.suggestion}`) }}</p>
-                   <div v-if="issue.message.includes('incomplete')" class="doc-link mt-2">
+                   <div v-if="issue.message.includes('incomplete')" class="doc-link mt-10">
                      <el-link type="primary" href="https://github.com/nap0o/2fauth-worker#三配置第三方登录" target="_blank">
                        <el-icon><Document /></el-icon> {{ $t('healthCheck.view_docs') }}
                      </el-link>
@@ -193,196 +193,3 @@ onMounted(() => {
 })
 </script>
 
-<style scoped>
-.health-check-container {
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  padding: 20px;
-  box-sizing: border-box;
-  overflow-y: auto;
-}
-
-.health-card {
-  width: 95%;
-  border-radius: 12px;
-}
-
-:global(html.dark) .health-card {
-  background-color: #1a1a1a;
-  border-color: #2c2c2c;
-}
-
-.health-header {
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.alert-title {
-  margin: 16px 0 0 0;
-  font-size: 24px;
-  font-weight: 600;
-  color: var(--el-text-color-primary);
-  letter-spacing: 0.5px;
-}
-
-.alert-divider {
-  width: 40px;
-  height: 4px;
-  background-color: var(--el-color-danger);
-  border-radius: 2px;
-  margin: 16px 0;
-}
-
-.subtitle {
-  margin: 15px 0px;
-  padding: 10px;
-}
-
-.subtitle :deep(.el-alert__content) {
-  padding: 0;
-}
-
-.subtitle :deep(.el-alert__title) {
-  color: var(--el-text-color-regular);
-  font-size: 16px;
-  line-height: 20px;
-  white-space: normal;
-  word-wrap: break-word;
-}
-
-.issue-alert {
-  margin-bottom: 20px;
-  align-items: flex-start;
-}
-
-.issue-content {
-  margin-top: 5px;
-}
-
-.issue-desc {
-  font-size: 14px;
-  margin-bottom: 15px;
-  line-height: 1.5;
-}
-
-.suggestion-box {
-  background-color: var(--el-color-primary-light-9);
-  border-radius: 8px;
-  padding: 16px;
-  border: 1px solid var(--el-color-primary-light-7);
-  border-left: 4px solid var(--el-color-primary);
-}
-
-:global(html.dark) .suggestion-box {
-  background-color: rgba(64, 158, 255, 0.08);
-  border: 1px solid rgba(64, 158, 255, 0.2);
-  border-left: 4px solid var(--el-color-primary);
-}
-
-:global(html.dark) .issue-alert {
-  background-color: rgba(245, 108, 108, 0.05);
-  border: 1px solid rgba(245, 108, 108, 0.2);
-}
-
-:global(html.dark) .missing-fields-text {
-  background-color: rgba(245, 108, 108, 0.1) !important;
-  border: 1px solid rgba(245, 108, 108, 0.3) !important;
-}
-
-.suggestion-title {
-  font-weight: bold;
-  margin-bottom: 8px;
-  font-size: 13px;
-  color: var(--el-text-color-primary);
-}
-
-.fix-action p {
-  margin: 0 0 10px 0;
-  font-size: 13px;
-  color: var(--el-text-color-regular);
-}
-
-.deploy-method-guide {
-  margin-bottom: 12px;
-  padding-bottom: 8px;
-  border-bottom: 1px dashed var(--el-border-color);
-}
-
-.deploy-item {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  margin: 0 0 8px 0;
-  font-size: 13px;
-  color: var(--el-text-color-primary);
-  font-weight: 500;
-}
-
-.text-danger p {
-  color: var(--el-color-danger);
-  font-weight: bold;
-}
-
-.key-generator {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  align-items: flex-start;
-}
-
-.mono-font :deep(.el-input__inner) {
-  font-family: monospace;
-  font-size: 13px;
-  letter-spacing: 0.5px;
-}
-
-.mt-2 {
-  margin-top: 8px;
-}
-
-.passed-checks-section {
-  margin-top: 30px;
-  padding-top: 20px;
-  border-top: 1px dashed var(--el-border-color);
-}
-
-.passed-checks-section h3 {
-  font-size: 15px;
-  color: var(--el-text-color-primary);
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 15px;
-}
-
-.passed-checks-section ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.passed-checks-section li {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 13px;
-  color: var(--el-text-color-regular);
-  margin-bottom: 10px;
-  padding: 8px 12px;
-  background-color: var(--el-fill-color-light);
-  border-radius: 6px;
-}
-
-.missing-fields-text {
-  display: inline-block;
-  margin-top: 8px;
-  color: var(--el-color-danger);
-  background-color: var(--el-color-danger-light-9);
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-size: 12px;
-}
-</style>

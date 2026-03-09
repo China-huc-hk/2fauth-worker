@@ -20,11 +20,3 @@ const emit = defineEmits(['success'])
 const activeTab = ref('export')
 </script>
 
-<style scoped>
-.migration-container {
-  padding: 10px;
-}
-.migration-tabs :deep(.el-tabs__nav-wrap::after) {
-  height: 1px;
-}
-</style>

@@ -1,5 +1,5 @@
 import { Hono } from 'hono';
-import { EnvBindings, AppError } from '@/app/config';
+import { EnvBindings } from '@/app/config';
 import { runHealthCheck } from '@/shared/utils/health';
 
 const health = new Hono<{ Bindings: EnvBindings }>();

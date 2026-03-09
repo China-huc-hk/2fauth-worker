@@ -14,12 +14,12 @@
           v-for="tool in tools" 
           :key="tool.id" 
           shadow="hover" 
-          class="tool-card" 
+          :class="['tool-card', `tool-card-${tool.id}`]" 
           @click="currentTool = tool.id"
         >
           <div class="tool-card-content">
-            <div class="icon-wrapper" :style="{ backgroundColor: tool.bgColor }">
-              <el-icon :size="32" :color="tool.iconColor"><component :is="tool.icon" /></el-icon>
+            <div class="icon-wrapper">
+              <el-icon :size="32"><component :is="tool.icon" /></el-icon>
             </div>
             <div class="text-info">
               <h3>{{ tool.title }}</h3>
@@ -59,41 +59,31 @@ const tools = computed(() => [
     id: 'totp-secret', 
     title: t('tools.totp_secret_title'), 
     desc: t('tools.totp_secret_desc'), 
-    icon: Lock, 
-    iconColor: '#67C23A',
-    bgColor: 'var(--el-color-success-light-9)'
+    icon: Lock
   },
   {
     id: 'apps-review',
     title: t('tools.apps_review_tool_title'),
     desc: t('tools.apps_review_tool_desc'),
-    icon: Iphone,
-    iconColor: '#9c27b0',
-    bgColor: 'var(--el-color-info-light-9)'
+    icon: Iphone
   },
   { 
     id: 'password', 
     title: t('tools.password_gen_title'), 
     desc: t('tools.password_gen_desc'), 
-    icon: Key, 
-    iconColor: '#409EFF',
-    bgColor: 'var(--el-color-primary-light-9)'
+    icon: Key
   },
   {
     id: 'time-sync',
     title: t('tools.time_sync_title'),
     desc: t('tools.time_sync_desc'),
-    icon: Timer,
-    iconColor: '#E6A23C',
-    bgColor: 'var(--el-color-warning-light-9)'
+    icon: Timer
   },
   {
     id: 'qr-parser',
     title: t('tools.qr_parser_title'),
     desc: t('tools.qr_parser_desc'),
-    icon: Camera,
-    iconColor: '#F56C6C',
-    bgColor: 'var(--el-color-danger-light-9)'
+    icon: Camera
   }
 ])
 

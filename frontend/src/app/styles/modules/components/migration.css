@@ -1,0 +1,229 @@
+/* Migration & Backup (DataImport.vue & DataExport.vue) */
+
+.migration-export-groups {
+    max-width: 100%;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.migration-export-group-card {
+    padding: 20px;
+    background-color: var(--el-bg-color-overlay);
+    border: 1px solid var(--el-border-color-light);
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+}
+
+.migration-group-header {
+    display: flex;
+    align-items: center;
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 15px;
+    color: var(--el-text-color-primary);
+}
+
+.migration-group-header .el-icon {
+    margin-right: 8px;
+    font-size: 18px;
+    color: var(--el-color-primary);
+}
+
+.migration-button-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.migration-button-row .el-button {
+    margin-left: 0;
+}
+
+.migration-button-with-icon {
+    display: inline-flex;
+    align-items: center;
+}
+
+.migration-button-with-icon .el-icon {
+    margin-right: 6px;
+    font-size: 16px;
+}
+
+/* 账号选择列表样式 */
+.migration-account-select-toolbar {
+    margin-bottom: 10px;
+}
+
+.migration-toolbar-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 5px;
+    margin-bottom: 10px;
+}
+
+.migration-selected-count {
+    font-size: 13px;
+    color: var(--el-text-color-secondary);
+}
+
+.migration-account-list-container {
+    border: 1px solid var(--el-border-color-light);
+    border-radius: 4px;
+    padding: 5px;
+}
+
+.migration-account-item {
+    padding: 8px 10px;
+    border-bottom: 1px solid var(--el-border-color-lighter);
+}
+
+.migration-account-item:last-child {
+    border-bottom: none;
+}
+
+.migration-account-item-content {
+    display: flex;
+    flex-direction: column;
+    margin-left: 8px;
+    line-height: 1.2;
+}
+
+.migration-account-item .service-name {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--el-text-color-primary);
+    margin-bottom: 4px;
+}
+
+.migration-account-item .account-name {
+    font-size: 13px;
+    color: var(--el-text-color-regular);
+}
+
+/* DataImport.vue Specific */
+.migration-import-upload {
+    margin-top: 20px;
+}
+
+.migration-import-upload .el-upload-dragger {
+    padding: 40px;
+    background-color: var(--el-fill-color-light);
+    border-color: var(--el-border-color);
+}
+
+.migration-import-upload .el-upload-dragger:hover {
+    border-color: var(--el-color-primary);
+}
+
+.migration-import-upload .el-icon--upload {
+    font-size: 48px;
+    color: var(--el-text-color-secondary);
+    margin-bottom: 20px;
+}
+
+.migration-import-tips {
+    text-align: left;
+    margin-top: 25px;
+    background-color: var(--el-fill-color-lighter);
+    padding: 0px 20px 20px 20px;
+    border-radius: 8px;
+    border: 1px dashed var(--el-border-color);
+}
+
+.migration-format-groups {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.migration-format-group h4 {
+    margin: 0 0 10px 0;
+    color: var(--el-text-color-primary);
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.migration-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.migration-tags .el-tag {
+    padding: 4px 8px;
+    height: auto;
+    color: var(--el-text-color-regular);
+    cursor: default;
+    border-color: transparent;
+    background-color: var(--el-fill-color-light);
+}
+
+.migration-tags .el-tag .el-icon {
+    display: inline-flex;
+    flex-wrap: wrap;
+    margin-right: 4px;
+}
+
+.migration-ga-tip {
+    background-color: var(--el-color-primary-light-9);
+    padding: 10px 12px;
+    border-radius: 6px;
+    border-left: 3px solid var(--el-color-primary);
+    margin-top: 10px;
+}
+
+.migration-ga-tip span {
+    font-weight: 600;
+    font-size: 13px;
+    color: var(--el-color-primary);
+    display: block;
+    margin-bottom: 4px;
+}
+
+.migration-ga-tip p {
+    margin: 0;
+    font-size: 12px;
+    color: var(--el-text-color-regular);
+    line-height: 1.5;
+}
+
+.migration-ms-tip {
+    background-color: var(--el-color-success-light-9);
+    padding: 10px 12px;
+    border-radius: 6px;
+    border-left: 3px solid var(--el-color-success);
+    margin-top: 10px;
+}
+
+.migration-ms-tip span {
+    font-weight: 600;
+    font-size: 13px;
+    color: var(--el-color-success);
+    display: block;
+    margin-bottom: 4px;
+}
+
+.migration-ms-tip p {
+    margin: 0;
+    font-size: 12px;
+    color: var(--el-color-regular);
+    line-height: 1.5;
+}
+
+.migration-ms-tip code {
+    word-wrap: break-word;
+}
+
+/* dataMigration.vue */
+.migration-container {
+    padding: 10px;
+}
+
+.migration-tabs :deep(.el-tabs__nav-wrap::after) {
+    height: 1px;
+}

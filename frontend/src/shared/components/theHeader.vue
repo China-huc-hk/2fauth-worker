@@ -1,14 +1,14 @@
 <template>
   <header class="header">
     <div class="logo">
-      <el-button v-if="layoutStore.isMobile && !['/login', '/health'].includes(route.path)" @click="layoutStore.showMobileMenu = true" style="margin-right: 10px; padding: 5px 8px; border: 1px solid var(--el-border-color); height: auto;">
+      <el-button v-if="layoutStore.isMobile && !['/login', '/health'].includes(route.path)" @click="layoutStore.showMobileMenu = true" class="header-menu-btn">
         <el-icon :size="14" class="menu-icon" style="color: var(--el-text-color-primary);">
           <svg viewBox="0 0 16 16" version="1.1" width="100%" height="100%" aria-hidden="true" fill="currentColor">
             <path d="M1 2.75A.75.75 0 0 1 1.75 2h12.5a.75.75 0 0 1 0 1.5H1.75A.75.75 0 0 1 1 2.75Zm0 5A.75.75 0 0 1 1.75 7h12.5a.75.75 0 0 1 0 1.5H1.75A.75.75 0 0 1 1 7.75ZM1.75 12h12.5a.75.75 0 0 1 0 1.5H1.75a.75.75 0 0 1 0-1.5Z"></path>
           </svg>
         </el-icon>
       </el-button>
-      <a href="#" @click.prevent="goHome" style="display: flex; align-items: center; text-decoration: none; color: inherit;">
+      <a href="#" @click.prevent="goHome" class="header-home-link">
         <el-icon :size="24" color="#409EFC" style="margin-right: 10px;"><Lock /></el-icon>
         <h2>2FAuth Worker</h2>
       </a>

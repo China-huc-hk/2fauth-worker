@@ -1,0 +1,270 @@
+/* 搜索栏吸顶过渡动画 */
+.vault-list-toolbar {
+    transition: padding 0.3s ease, background-color 0.3s ease;
+    box-sizing: border-box;
+}
+
+/* 共有吸顶属性 */
+.vault-list-toolbar.is-affixed {
+    z-index: 2000;
+    margin-bottom: 0 !important;
+    background-color: var(--el-bg-color-page);
+}
+
+/* 移动端吸顶效果：全屏、背景、边框 */
+@media (max-width: 767px) {
+    .vault-list-toolbar.is-affixed {
+        width: 100vw !important;
+        margin-left: -20px !important;
+        /* 抵消 el-main 的内边距 */
+        padding: 14px 20px !important;
+        border-radius: 0 !important;
+    }
+}
+
+/* PC 端吸顶效果：保持原有宽度，无背景色和下边框 */
+@media (min-width: 768px) {
+    .vault-list-toolbar.is-affixed {
+        border-bottom: none !important;
+        padding: 20px 0px !important;
+    }
+}
+
+/* VaultList.vue */
+.vault-card {
+    border-radius: 12px;
+    /* 全局规则已覆盖 transition，此处只需定义样式 */
+    border: 1px solid var(--el-border-color-lighter);
+    cursor: pointer;
+    background-color: var(--el-bg-color);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.vault-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1) !important;
+}
+
+.vault-list-wrapper .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+/* Flex 容器：限制宽度以支持内部文本截断 */
+.service-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+    /* 占据剩余空间 */
+    min-width: 0;
+    /* 关键：允许 Flex 子项收缩 */
+    margin-right: 10px;
+}
+
+/* 标题截断逻辑 */
+.service-name {
+    margin: 0;
+    font-size: 18px;
+    color: var(--el-text-color-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* 让卡片内容撑开，底部对齐 */
+.vault-card .el-card__body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.vault-name {
+    color: var(--el-text-color-secondary);
+    font-size: 14px;
+    margin: 0 0 10px 24px;
+    word-break: break-all;
+}
+
+.more-icon {
+    cursor: pointer;
+    color: var(--el-text-color-secondary);
+    padding: 5px;
+}
+
+.more-icon:hover {
+    color: #409EFF;
+}
+
+.vault-card.is-selected {
+    border: 1px solid #409EFF;
+    background-color: var(--vault-selected-bg);
+}
+
+.batch-text {
+    color: var(--el-text-color-regular);
+    font-size: 14px;
+}
+
+.code-display-area {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: auto;
+    padding-left: 24px;
+    padding-top: 15px;
+}
+
+.code-left {
+    display: flex;
+    flex-direction: row;
+    align-items: baseline;
+    gap: 10px;
+}
+
+.current-code {
+    font-size: 24px;
+    font-weight: bold;
+    color: #409EFF;
+    letter-spacing: 2px;
+    line-height: 1;
+    font-family: monospace;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: clip;
+}
+
+.current-code[data-digits="8"] {
+    font-size: 20px;
+    letter-spacing: 0px;
+}
+
+.next-code {
+    font-size: 16px;
+    color: var(--el-text-color-secondary);
+    font-family: monospace;
+}
+
+.next-code[data-digits="8"] {
+    font-size: 14px;
+    letter-spacing: 0px;
+}
+
+.timer-text {
+    font-size: 12px;
+    color: var(--el-text-color-regular);
+    font-weight: bold;
+    display: block;
+    text-align: center;
+}
+
+.el-progress__text {
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    transform: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 30px;
+}
+
+/* VaultList - QR Dialog */
+.qr-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.qr-info {
+    margin-bottom: 15px;
+}
+
+.qr-service {
+    margin: 0 0 5px 0;
+    font-size: 20px;
+    color: var(--el-text-color-primary);
+}
+
+.qr-account {
+    margin: 0;
+    color: var(--el-text-color-secondary);
+    font-size: 14px;
+}
+
+.qr-image-wrapper {
+    margin: 10px 0;
+    padding: 10px;
+    background: #fff;
+    border-radius: 8px;
+    border: 1px solid var(--el-border-color-lighter);
+}
+
+.qr-code-img {
+    display: block;
+    width: 200px;
+    height: 200px;
+}
+
+.qr-tip {
+    font-size: 12px;
+    color: var(--el-text-color-regular);
+    margin: 10px 0 20px 0;
+}
+
+.secret-section {
+    width: 100%;
+    margin-bottom: 15px;
+}
+
+.secret-box {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--el-fill-color-light);
+    padding: 10px 15px;
+    border-radius: 6px;
+    border: 1px solid var(--el-border-color-light);
+}
+
+.secret-text {
+    font-family: monospace;
+    font-size: 14px;
+    color: var(--el-text-color-regular);
+    letter-spacing: 1px;
+}
+
+.secret-actions {
+    display: flex;
+    gap: 15px;
+}
+
+.action-icon {
+    cursor: pointer;
+    font-size: 16px;
+    color: var(--el-text-color-secondary);
+    transition: color 0.2s;
+}
+
+.action-icon:hover {
+    color: #409EFF;
+}
+
+.uri-link-wrapper {
+    margin-top: 5px;
+}
+
+/* AddVaultManual.vue */
+.vault-manual-form-wrapper {
+    padding: 10px 0;
+}
+
+.vault-manual-submit-btn {
+    width: 100%;
+}
