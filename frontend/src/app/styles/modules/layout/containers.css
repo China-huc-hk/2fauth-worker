@@ -27,6 +27,47 @@ main {
     }
 }
 
+/* App Shell (Global Loading Overlay) */
+.global-app-shell {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 9999;
+    background-color: var(--el-bg-color-page);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: opacity 0.3s ease-in-out;
+}
+
+.shell-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+}
+
+.shell-spinner {
+    animation: loading-rotate 2s linear infinite;
+}
+
+/* Layout Wrappers (Main / Blank) */
+.layout-main,
+.layout-blank {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.layout-main-content,
+.layout-blank-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
 /* Home.vue */
 .home-container {
     height: 100%;

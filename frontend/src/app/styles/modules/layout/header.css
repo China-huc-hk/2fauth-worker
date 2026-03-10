@@ -28,7 +28,28 @@
 }
 
 .user-actions {
-    gap: 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.guest-actions {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.header-action-btn.el-button.is-circle {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    background: var(--el-bg-color);
+    border: 1px solid var(--el-border-color-lighter);
+    color: var(--el-text-color-regular);
+}
+
+.header-action-btn.el-button.is-circle:hover {
+    color: var(--el-color-primary);
+    border-color: var(--el-color-primary-light-5);
+    background-color: var(--el-color-primary-light-9);
 }
 
 .user-profile {
@@ -55,6 +76,10 @@
 
     .logo h2 {
         font-size: 18px;
+    }
+
+    .guest-actions {
+        gap: 0px;
     }
 }
 

@@ -1,7 +1,7 @@
 import { EnvBindings, AppError } from '@/app/config';
 import { generateSecureJWT, generateDeviceKey } from '@/shared/utils/crypto';
 import * as schema from '@/shared/db/schema';
-import { eq, desc, and } from 'drizzle-orm';
+import { eq, desc } from 'drizzle-orm';
 import {
     generateRegistrationOptions,
     verifyRegistrationResponse,

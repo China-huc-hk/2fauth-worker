@@ -125,48 +125,86 @@
     margin-bottom: 20px;
 }
 
-.migration-import-tips {
+/* 生态支持矩阵 (Ecosystem Grid) */
+.migration-ecosystem {
+    margin-top: 30px;
     text-align: left;
-    margin-top: 25px;
-    background-color: var(--el-fill-color-lighter);
-    padding: 0px 20px 20px 20px;
-    border-radius: 8px;
-    border: 1px dashed var(--el-border-color);
 }
 
-.migration-format-groups {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
-
-.migration-format-group h4 {
-    margin: 0 0 10px 0;
+.ecosystem-title {
+    font-size: 16px;
     color: var(--el-text-color-primary);
-    font-size: 14px;
+    margin: 20px 0;
     font-weight: 600;
 }
 
-.migration-tags {
+.ecosystem-groups {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.ecosystem-group {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.group-title {
+    margin: 0;
+    font-size: 15px;
+    color: var(--el-text-color-regular);
+    font-weight: 600;
+}
+
+.ecosystem-grid {
     display: flex;
     flex-wrap: wrap;
-    gap: 8px;
-    margin-bottom: 8px;
+    gap: 12px 24px;
 }
 
-.migration-tags .el-tag {
-    padding: 4px 8px;
-    height: auto;
-    color: var(--el-text-color-regular);
-    cursor: default;
-    border-color: transparent;
-    background-color: var(--el-fill-color-light);
-}
-
-.migration-tags .el-tag .el-icon {
+.ecosystem-item {
     display: inline-flex;
-    flex-wrap: wrap;
-    margin-right: 4px;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: var(--el-text-color-primary);
+    line-height: 1.2;
+}
+
+.ecosystem-item .el-icon,
+.ecosystem-item svg {
+    font-size: 18px;
+}
+
+/* 疑难解答折叠面板 */
+/* 疑难解答折叠面板 */
+.ecosystem-collapse {
+    border: none;
+    background-color: transparent;
+}
+
+.ecosystem-collapse :deep(.el-collapse),
+.ecosystem-collapse :deep(.el-collapse-item__header),
+.ecosystem-collapse :deep(.el-collapse-item__wrap) {
+    border: none;
+}
+
+.ecosystem-collapse :deep(.el-collapse-item__header) {
+    background-color: transparent;
+    padding: 0;
+    font-size: 13px;
+    color: var(--el-text-color-regular);
+    height: 32px;
+    line-height: 32px;
+}
+
+.ecosystem-collapse :deep(.el-collapse-item__wrap) {
+    background-color: transparent;
+}
+
+.ecosystem-collapse :deep(.el-collapse-item__content) {
+    padding: 10px 0;
 }
 
 .migration-ga-tip {
@@ -174,7 +212,7 @@
     padding: 10px 12px;
     border-radius: 6px;
     border-left: 3px solid var(--el-color-primary);
-    margin-top: 10px;
+    margin-top: 5px;
 }
 
 .migration-ga-tip span {
@@ -197,7 +235,7 @@
     padding: 10px 12px;
     border-radius: 6px;
     border-left: 3px solid var(--el-color-success);
-    margin-top: 10px;
+    margin-top: 15px;
 }
 
 .migration-ms-tip span {

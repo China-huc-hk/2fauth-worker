@@ -299,6 +299,7 @@
         "ga_auth_desc": "请在 App 内导出\"迁移二维码\"，将截图直接上传 (.png / .jpg)",
         "ms_auth_desc": "Microsoft Authenticator (仅支持 Android)",
         "ms_auth_detail": "Android 手机导出以下3个文件后,同时选中上传即可导入",
+        "ga_ms_import_guide": "Google Auth / Microsoft Auth 导入指南",
         "batch_import_processing": "📦 批量导入处理中",
         "batch_progress": "{processed} / {total} 任务已完成",
         "decrypt_backup_title": "🔓 解密备份文件",

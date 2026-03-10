@@ -1,5 +1,5 @@
 <template>
-  <div class="health-check-container" v-loading.fullscreen.lock="loading">
+  <div class="health-check-container">
     <el-card v-if="!loading && !passed" class="health-card">
 
       <template #header>

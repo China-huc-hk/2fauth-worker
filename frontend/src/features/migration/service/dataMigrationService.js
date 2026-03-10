@@ -903,10 +903,8 @@ export const dataMigrationService = {
 
             // Clean up memory VFS (by clearing the maps, safer than calling xDelete from JS)
             try {
-                if (vfs) {
-                    vfs.mapNameToFile.clear()
-                    vfs.mapIdToFile.clear()
-                }
+                vfs.mapNameToFile.clear()
+                vfs.mapIdToFile.clear()
             } catch (ignore) { }
 
             if (vault.length === 0) {

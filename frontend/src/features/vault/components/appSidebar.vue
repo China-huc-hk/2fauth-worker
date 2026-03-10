@@ -68,12 +68,17 @@
       <!-- 移动端用户信息卡片 -->
       <div class="user-info-card" v-if="authUserStore.userInfo">
         <div class="user-card-content">
-          <el-avatar :size="40" :src="authUserStore.userInfo?.avatar" class="user-avatar">
-            {{ authUserStore.userInfo?.username?.charAt(0)?.toUpperCase() }}
+          <el-avatar 
+            :size="40" 
+            :src="authUserStore.userInfo?.avatar || ''" 
+            class="user-avatar"
+            @error="(e) => true"
+          >
+            {{ authUserStore.userInfo?.username ? authUserStore.userInfo.username.charAt(0).toUpperCase() : '?' }}
           </el-avatar>
           <div class="user-detail">
             <div class="user-name-row">
-              <span class="user-name">{{ authUserStore.userInfo?.username }}</span>
+              <span class="user-name">{{ authUserStore.userInfo?.username || '2FAuth' }}</span>
               <i class="status-dot" :class="{ 'is-online': !layoutStore.isOffline }"></i>
             </div>
             <div class="user-provider" v-if="authUserStore.userInfo?.provider">

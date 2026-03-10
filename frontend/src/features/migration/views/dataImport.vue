@@ -23,34 +23,45 @@
             <p><el-tag type="success" effect="light">{{ $t('migration.auto_identify_tip') }}</el-tag></p>
             <p><span v-html="$t('migration.drag_drop_tip')"></span></p>
           </div>
-          <template #tip>
-            <div class="migration-import-tips">
-              <h4>{{ $t('migration.support_desc') }}</h4>
-              <div class="migration-format-groups">
-                <div class="migration-format-group">
-                  <h4>📁 {{ $t('migration.system_backup_format') }}</h4>
-                  <div class="migration-tags">
-                    <el-tag type="info" effect="light"><el-icon><Lock /></el-icon> {{ $t('migration.encrypted_backup_json') }}</el-tag>
-                    <el-tag type="info" effect="light"><el-icon><Unlock /></el-icon> {{ $t('migration.plaintext_backup_json') }}</el-tag>
-                  </div>
-                </div>
+        </el-upload>
 
-                <div class="migration-format-group">
-                  <h4>📱 {{ $t('migration.mobile_app_format') }}</h4>
-                  <div class="migration-tags">
-                    <el-tag type="info" effect="light"><icon2FAS /> 2FAS (.2fas)</el-tag>
-                    <el-tag type="info" effect="light"><iconAegis /> Aegis (.json/.txt)</el-tag>
-                    <el-tag type="info" effect="light"><iconBitwarden /> Bitwarden Auth (.json/.csv)</el-tag>
-                    <el-tag type="info" effect="light"><iconProtonAuth /> Proton Auth (.json)</el-tag>
-                    <el-tag type="info" effect="light"><iconEnte /> Ente Auth (.txt)</el-tag>
-                    <el-tag type="info" effect="light"><iconGoogleAuth /> Google Auth (.png/.jpg)</el-tag>
-                    <el-tag type="info" effect="light"><iconMicrosoftAuth /> Microsoft Auth (PhoneFactor)</el-tag>
-                  </div>
-                  <div class="migration-ga-tip">
+        <!-- 生态支持矩阵 (独立剥离的说明区) -->
+        <div class="migration-ecosystem mt-30">
+          <el-divider border-style="dashed" />
+          <h3 class="ecosystem-title">{{ $t('migration.support_desc') }}</h3>
+          
+          <div class="ecosystem-groups">
+            <div class="ecosystem-group">
+              <h4 class="group-title">📁 {{ $t('migration.system_backup_format') }}</h4>
+              <div class="ecosystem-grid">
+                <span class="ecosystem-item"><el-icon><Lock /></el-icon> {{ $t('migration.encrypted_backup_json') }}</span>
+                <span class="ecosystem-item"><el-icon><Unlock /></el-icon> {{ $t('migration.plaintext_backup_json') }}</span>
+              </div>
+            </div>
+
+            <div class="ecosystem-group">
+              <h4 class="group-title">📱 {{ $t('migration.mobile_app_format') }}</h4>
+              <div class="ecosystem-grid">
+                <span class="ecosystem-item"><icon2FAS /> 2FAS (.2fas)</span>
+                <span class="ecosystem-item"><iconAegis /> Aegis (.json/.txt)</span>
+                <span class="ecosystem-item"><iconBitwarden /> Bitwarden (.json/.csv)</span>
+                <span class="ecosystem-item"><iconProtonAuth /> Proton (.json)</span>
+                <span class="ecosystem-item"><iconEnte /> Ente (.txt)</span>
+                <span class="ecosystem-item"><iconGoogleAuth /> Google Auth (.png/.jpg)</span>
+                <span class="ecosystem-item"><iconMicrosoftAuth /> Microsoft Auth</span>
+              </div>
+              
+              <!-- 疑难解答（折叠） -->
+              <el-collapse class="ecosystem-collapse mt-15">
+                <el-collapse-item name="1">
+                  <template #title>
+                    <el-icon class="mr-5"><Warning /></el-icon> <strong>{{ $t('migration.ga_ms_import_guide') }}</strong>
+                  </template>
+                  <div class="migration-ga-tip mt-5">
                     <span>Google Authenticator</span>
                     <p>{{ $t('migration.ga_auth_desc') }}</p>
                   </div>
-                  <div class="migration-ms-tip">
+                  <div class="migration-ms-tip mt-10">
                     <span>{{ $t('migration.ms_auth_desc') }}</span>
                     <p>{{ $t('migration.ms_auth_detail') }}:<br />
                       <code>/data/data/com.azure.authenticator/databases/PhoneFactor</code><br />
@@ -58,20 +69,20 @@
                       <code>/data/data/com.azure.authenticator/databases/PhoneFactor-shm</code>
                     </p>
                   </div>
-                </div>
+                </el-collapse-item>
+              </el-collapse>
+            </div>
 
-                <div class="migration-format-group">
-                  <h4>📄 {{ $t('migration.generic_format') }}</h4>
-                  <div class="migration-tags">
-                    <el-tag type="info" effect="light"><el-icon><Document /></el-icon> {{ $t('migration.generic_json') }}</el-tag>
-                    <el-tag type="info" effect="light"><el-icon><Tickets /></el-icon> OTPAuth URI (.txt)</el-tag>
-                    <el-tag type="info" effect="light"><el-icon><Grid /></el-icon> {{ $t('migration.spreadsheet_csv') }}</el-tag>
-                  </div>
-                </div>
+            <div class="ecosystem-group">
+              <h4 class="group-title">📄 {{ $t('migration.generic_format') }}</h4>
+              <div class="ecosystem-grid">
+                <span class="ecosystem-item"><el-icon><Document /></el-icon> {{ $t('migration.generic_json') }}</span>
+                <span class="ecosystem-item"><el-icon><Tickets /></el-icon> OTPAuth URI (.txt)</span>
+                <span class="ecosystem-item"><el-icon><Grid /></el-icon> {{ $t('migration.spreadsheet_csv') }}</span>
               </div>
             </div>
-          </template>
-        </el-upload>
+          </div>
+        </div>
 
       </div>
     </div>
@@ -121,7 +132,7 @@
 </template>
 
 <script setup>
-import { UploadFilled, Lock, Unlock, Document, Tickets, Grid } from '@element-plus/icons-vue'
+import { UploadFilled, Lock, Unlock, Document, Tickets, Grid, Warning } from '@element-plus/icons-vue'
 import { useDataImport } from '@/features/migration/composables/useDataImport'
 
 // icons for import options (follow export page style)
