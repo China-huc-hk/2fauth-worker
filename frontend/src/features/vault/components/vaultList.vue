@@ -232,7 +232,10 @@ const isToolbarFixed = ref(false)
 // --- 解锁回调：离线优先，秒开首屏 ---
 const handleUnlocked = async () => {
     try {
-        if (vaultStore.isDirty) return
+        if (vaultStore.isDirty) {
+            fetchVault()
+            return
+        }
         const vaultData = await vaultStore.getData()
         if (vaultData && vaultData.vault) {
             vault.value = vaultData.vault

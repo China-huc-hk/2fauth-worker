@@ -175,6 +175,15 @@ export default defineConfig({
             if (id.includes('/node_modules/libsodium-wrappers/') || id.includes('/node_modules/libsodium-wrappers-sumo/')) return 'libsodium-wrappers'
             if (id.includes('/node_modules/sql.js/')) return 'sql-js'
 
+            // 新增：通行密钥 (Passkey) 相关
+            if (id.includes('/node_modules/@simplewebauthn/')) return 'simplewebauthn'
+
+            // 二维码处理相关 (体积较大且仅特定页面使用)
+            if (id.includes('/node_modules/qrcode/') || id.includes('/node_modules/jsqr/')) return 'qr-utils'
+
+            // 大型 UI 支撑库
+            if (id.includes('/node_modules/@tanstack/')) return 'tanstack-query'
+
             // 剩余其他的第三方包交给 Rollup 按需路由或组件自动拆分 (移除强硬的 'vendor' 返回)
           }
         }

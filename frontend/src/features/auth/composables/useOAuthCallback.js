@@ -94,7 +94,8 @@ export function useOAuthCallback() {
             }
 
             if (data.success) {
-                // 持久化设备指纹标识 (用于双端加密验证)
+                // 持久化设备指纹标识 (Device Key / Salt)
+                // 核心: 离线秒开和端到端加密的解密因子
                 if (data.deviceKey) {
                     await setIdbItem('device_salt', data.deviceKey)
                 }

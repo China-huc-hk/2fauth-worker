@@ -1,5 +1,5 @@
 import { EnvBindings, AppError } from '@/app/config';
-import { generateSecureJWT } from '@/shared/utils/crypto';
+import { generateSecureJWT, generateDeviceKey } from '@/shared/utils/crypto';
 import { getOAuthProvider } from '@/features/auth/providers/index';
 import type { OAuthUserInfo } from '@/features/auth/providers/baseOAuthProvider';
 
@@ -53,28 +53,14 @@ export class AuthService {
         // 签发 Token
         const token = await this.generateSystemToken(userInfo);
 
-        // 附加客户端签名因子
-        const deviceKey = await this.generateDeviceKey(userInfo.id);
+        // 附带客户端签名因子 (Device Key)
+        // 注意：此处统一使用 userInfo.email 作为密钥因子，以确保 OAuth 与 Passkey 登录产生的解密密钥一致。
+        const deviceKey = await generateDeviceKey(userInfo.email || userInfo.id, this.env.JWT_SECRET || '');
 
         return { token, userInfo, deviceKey };
     }
 
-    /**
-     * 生成客户端绑定标识
-     */
-    private async generateDeviceKey(userId: string): Promise<string> {
-        const secret = this.env.JWT_SECRET;
-        const encoder = new TextEncoder();
-        const keyMaterial = await crypto.subtle.importKey(
-            'raw',
-            encoder.encode(secret),
-            { name: 'HMAC', hash: 'SHA-256' },
-            false,
-            ['sign']
-        );
-        const signature = await crypto.subtle.sign('HMAC', keyMaterial, encoder.encode(userId + "device_salt_offline_key"));
-        return Array.from(new Uint8Array(signature)).map(b => b.toString(16).padStart(2, '0')).join('');
-    }
+
 
     /**
      * 白名单校验

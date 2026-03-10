@@ -196,24 +196,23 @@ auth.post('/webauthn/login/verify', async (c) => {
 
     return c.json({
         success: true,
+        deviceKey: result.deviceKey,
         userInfo: result.userInfo
     });
 });
 
 // 5. 获取凭证列表 (需已登录)
 auth.get('/webauthn/credentials', authMiddleware, async (c) => {
-    const user = c.get('user');
     const service = getWebAuthnService(c);
-    const credentials = await service.listCredentials(user.email);
+    const credentials = await service.listCredentials();
     return c.json({ success: true, credentials });
 });
 
 // 6. 删除凭证 (需已登录)
 auth.delete('/webauthn/credentials/:id', authMiddleware, async (c) => {
-    const user = c.get('user');
     const credentialId = c.req.param('id');
     const service = getWebAuthnService(c);
-    const result = await service.deleteCredential(user.email, credentialId);
+    const result = await service.deleteCredential(credentialId);
     return c.json(result);
 });
 

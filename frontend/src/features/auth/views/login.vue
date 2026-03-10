@@ -79,6 +79,7 @@ import iconFingerprint from '@/shared/components/icons/iconFingerprint.vue'
 import { useOAuthProviders } from '@/features/auth/composables/useOAuthProviders'
 import { webAuthnService } from '@/features/auth/service/webAuthnService'
 import { useAuthUserStore } from '@/features/auth/store/authUserStore'
+import { setIdbItem } from '@/shared/utils/idb'
 
 const { t } = useI18n()
 const authUserStore = useAuthUserStore()
@@ -113,9 +114,9 @@ const handlePasskeyLogin = async () => {
     if (res.success) {
       // Passkey 登录逻辑与 OAuth 回调成功后一致
       await authUserStore.setUserInfo(res.userInfo)
-      // 设备指纹 key (Passkey 登录暂时可以不强制要求 deviceKey，或者由后端生成返回)
+      // 设备指纹 key (用于离线加密验证)
       if (res.deviceKey) {
-        localStorage.setItem('device_key', res.deviceKey)
+        await setIdbItem('device_salt', res.deviceKey)
       }
       
       ElMessage.success(t('common.success'))

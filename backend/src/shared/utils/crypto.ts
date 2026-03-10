@@ -1,6 +1,23 @@
-// 统一加密标准模块 (Backend Version)
-// 算法: AES-GCM-256 + PBKDF2 (SHA-256)
-// 目标: 确保前后端生成的加密数据完全互通
+/**
+ * 统一加密标准模块 (Backend Version)
+ * 算法: AES-GCM-256 + PBKDF2 (SHA-256)
+ * 目标: 确保前后端生成的加密数据完全互通
+ * 
+ * --- 核心安全架构说明 (Security Architecture) ---
+ * 1. 数据库透明加密 (DB Level): 所有金库敏感字段 (secret) 在 D1 数据库中均以加密形式存储，
+ *    由后端环境变量 ENCRYPTION_KEY 保护。
+ * 
+ * 2. 客户端绑定指纹 (Device Salt / Device Key): 
+ *    为了实现“零知识”级别的安全性，数据同步到前端后，会配合一个“设备指纹”进行二次离线加密。
+ *    - 生成逻辑: HMAC-SHA256(UserId + "device_salt_offline_key", JWT_SECRET)
+ *    - 作用: 
+ *      a. 即使数据库泄露且 ENCRYPTION_KEY 泄露，黑客没有 JWT_SECRET 且不知道用户 ID 指纹，也无法解密本地缓存。
+ *      b. 前端无需持久化存储登录密码即可实现离线解密（秒开）。
+ *      c. 实现了“账号+设备”的双重绑定。
+ * 
+ * 3. 互通性: OAuth 与 Passkey 登录必须生成完全一致的 DeviceKey，以确保同一账号下数据解密一致。
+ * ----------------------------------------------
+ */
 
 export const CRYPTO_CONFIG = {
     ALGO_NAME: 'AES-GCM',
@@ -180,4 +197,28 @@ export async function decryptData(encryptedData: { encrypted: number[], iv: numb
     // @ts-ignore Cloudflare WebCrypto types mismatch with standard BufferSource
     const decrypted = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: iv as any }, key, encrypted as any);
     return JSON.parse(decoder.decode(decrypted));
+}
+
+/**
+ * 生成客户端绑定标识 (Device Key / Device Salt)
+ * 
+ * 此标识是实现“离线秒开”和“终端绑定加密”的核心：
+ * 1. 登录成功后，由后端返回给前端，存入 IndexedDB (device_salt)。
+ * 2. 前端获取金库数据后，会使用此 Key 对敏感字段进行本地持久化加密转存。
+ * 3. 再次打开应用时，无需请求后端，可直接用此 Key 解密本地缓存，实现极致加载速度。
+ * 
+ * @param userId 用户唯一标识 (统一使用 Email 以确保多登录方式互通)
+ * @param secret 后端私钥 (JWT_SECRET)，确保外部无法伪造此指纹
+ */
+export async function generateDeviceKey(userId: string, secret: string): Promise<string> {
+    const encoder = new TextEncoder();
+    const keyMaterial = await crypto.subtle.importKey(
+        'raw',
+        encoder.encode(secret),
+        { name: 'HMAC', hash: 'SHA-256' },
+        false,
+        ['sign']
+    );
+    const signature = await crypto.subtle.sign('HMAC', keyMaterial, encoder.encode(userId + "device_salt_offline_key"));
+    return Array.from(new Uint8Array(signature)).map(b => b.toString(16).padStart(2, '0')).join('');
 }

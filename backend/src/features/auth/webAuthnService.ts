@@ -1,5 +1,5 @@
 import { EnvBindings, AppError } from '@/app/config';
-import { generateSecureJWT } from '@/shared/utils/crypto';
+import { generateSecureJWT, generateDeviceKey } from '@/shared/utils/crypto';
 import * as schema from '@/shared/db/schema';
 import { eq, desc, and } from 'drizzle-orm';
 import {
@@ -141,9 +141,14 @@ export class WebAuthnService {
                 provider: 'passkey'
             });
 
+            // 附带客户端解密因子 (Device Key)
+            // 核心: 必须使用 Email 与 OAuth 逻辑保持对齐，确保解密一致性。
+            const deviceKey = await generateDeviceKey(userEmail, this.env.JWT_SECRET || '');
+
             return {
                 success: true,
                 token,
+                deviceKey,
                 userInfo: {
                     id: userEmail,
                     username: userEmail.split('@')[0],
@@ -177,7 +182,7 @@ export class WebAuthnService {
     /**
      * 获取用户的凭证列表
      */
-    async listCredentials(userEmail: string) {
+    async listCredentials() {
         const results = await this.env.DB.select({
             id: schema.authPasskeys.credentialId,
             name: schema.authPasskeys.name,
@@ -185,7 +190,6 @@ export class WebAuthnService {
             last_used_at: schema.authPasskeys.lastUsedAt
         })
             .from(schema.authPasskeys)
-            .where(eq(schema.authPasskeys.userId, userEmail))
             .orderBy(desc(schema.authPasskeys.createdAt));
         return results;
     }
@@ -193,12 +197,9 @@ export class WebAuthnService {
     /**
      * 删除凭证
      */
-    async deleteCredential(userEmail: string, credentialId: string) {
+    async deleteCredential(credentialId: string) {
         await this.env.DB.delete(schema.authPasskeys)
-            .where(and(
-                eq(schema.authPasskeys.userId, userEmail),
-                eq(schema.authPasskeys.credentialId, credentialId)
-            ));
+            .where(eq(schema.authPasskeys.credentialId, credentialId));
         return { success: true };
     }
 }

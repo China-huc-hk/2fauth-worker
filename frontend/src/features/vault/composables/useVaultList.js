@@ -15,9 +15,10 @@ import { vaultService } from '@/features/vault/service/vaultService'
  *    消除 Loading 空白期的出现。也不会触发多余的重复分页加载以及昂贵的 PBKDF2 （`vaultStore.saveData`）加解密迭代开销。
  * 3. 并发解耦: 本 Composable `useVaultList` 独立负责 Vue Query 分页和本地缓存维护（`vaultStore.saveData`）。
  *    对于后续验证码计算的具体逻辑，委托给外部通过参数 `afterLoadRef` 回调。
- * 
- * @param {import('vue').Ref<Function|null>} afterLoadRef - 可选的 ref，指向数据合并后的异步回调（如 updateVaultStatus）
- * @returns Composable state and actions
+ * 4. 离线解密与存储绑定 (Device Key): 
+ *    获取数据后会调用 `vaultStore.saveData`。该方法使用从 IndexedDB (device_salt) 读取的设备金钥，
+ *    对数据进行本地二次加密存储。这确保了：a) 即使数据库泄露也无法在无设备指纹的情况下解密；b) 提升了离线访问安全性。
+ * ----------------------------------------------
  */
 export function useVaultList(afterLoadRef = null) {
     const vaultStore = useVaultStore()
