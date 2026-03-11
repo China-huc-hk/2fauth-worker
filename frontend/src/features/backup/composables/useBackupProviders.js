@@ -227,6 +227,11 @@ export function useBackupProviders() {
 
     const setupAuthListener = (onMessage) => {
         const handleMsg = (e) => {
+            // Security: Always verify origin for window message events
+            if (e instanceof MessageEvent && e.origin !== window.location.origin && e.source !== window) {
+                // BroadcastChannel events are same-origin by design, but window.postMessage needs this check
+                if (e.origin !== window.location.origin) return;
+            }
             onMessage(e)
             handleAuthMessage(e)
         }
