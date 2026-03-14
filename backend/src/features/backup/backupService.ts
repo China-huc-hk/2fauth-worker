@@ -118,7 +118,7 @@ export class BackupService {
         }
 
         // Inject persistence callback if id is provided
-        if (id && provider) {
+        if (id) {
             const key = this.env.ENCRYPTION_KEY || this.env.JWT_SECRET;
             provider.onConfigUpdate = async (updatedConfig: any) => {
                 const encryptedConfig = await this.processConfigForStorage(type, updatedConfig, key);

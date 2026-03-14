@@ -174,6 +174,10 @@ import {
   Lock, Iphone, Document, Search, 
   Unlock, Tickets, Grid, Monitor 
 } from '@element-plus/icons-vue'
+import icon2FAS from '@/shared/components/icons/icon2FAS.vue'
+import iconAegis from '@/shared/components/icons/iconAegis.vue'
+import iconGoogleAuth from '@/shared/components/icons/iconGoogleAuth.vue'
+import iconBitwarden from '@/shared/components/icons/iconBitwarden.vue'
 import { useLayoutStore } from '@/shared/stores/layoutStore'
 import { useDataExport } from '@/features/migration/composables/useDataExport'
 import { i18n } from '@/locales'
