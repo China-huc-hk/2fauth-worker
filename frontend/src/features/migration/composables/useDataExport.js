@@ -73,7 +73,7 @@ export function useDataExport() {
         const variant = currentVariant.value
         let password = ''
 
-        if (type === 'encrypted') {
+        if (type === '2fauth_encrypted') {
             if (exportForm.value.password !== exportForm.value.confirm) {
                 return ElMessage.error(t('migration.password_mismatch'))
             }
@@ -94,7 +94,7 @@ export function useDataExport() {
                 throw new Error(t('migration.no_accounts_to_export'))
             }
 
-            loadingText.value = type === 'encrypted' ? t('migration.encrypting') : t('migration.generating_file')
+            loadingText.value = type === '2fauth_encrypted' ? t('migration.encrypting') : t('migration.generating_file')
 
             // 特殊处理 Google Auth (不再直接生成，而是进入选择界面)
             if (type === 'gauth') {
@@ -107,7 +107,7 @@ export function useDataExport() {
                 return
             }
 
-            if (type === 'html') {
+            if (type === '2fauth_html') {
                 const htmlContent = await dataMigrationService.exportAsHtml(vault)
                 downloadBlob(htmlContent, `2fauth-worker-export-html-${new Date().toISOString().split('T')[0]}.html`, 'text/html')
                 ElMessage.success(t('migration.export_success'))
@@ -121,7 +121,7 @@ export function useDataExport() {
             const date = new Date().toISOString().split('T')[0]
 
             switch (type) {
-                case 'text':
+                case 'generic_text':
                     mimeType = 'text/plain'
                     filename = `2fauth-worker-export-otpauth-${date}.txt`
                     break
@@ -129,7 +129,7 @@ export function useDataExport() {
                     mimeType = 'text/csv'
                     filename = `2fauth-worker-export-csv-${date}.csv`
                     break
-                case 'bwauth':
+                case 'bitwarden_auth':
                     mimeType = 'application/json'
                     filename = `2fauth-worker-export-bitwarden-auth-${date}.json`
                     break
@@ -141,10 +141,18 @@ export function useDataExport() {
                     mimeType = 'application/json'
                     filename = `2fauth-worker-export-generic-json-${date}.json`
                     break
-                default:
-                    // Covers 'encrypted', 'json', 'aegis'
+                case '2fauth_encrypted':
                     mimeType = 'application/json'
-                    filename = `2fauth-worker-export-${type}-${date}.json`
+                    filename = `2fauth-worker-backup-encrypted-${date}.json`
+                    break
+                case '2fauth_json':
+                    mimeType = 'application/json'
+                    filename = `2fauth-worker-backup-json-${date}.json`
+                    break
+                default:
+                    // Covers '2fauth_html', 'aegis' etc
+                    mimeType = (type === '2fauth_html') ? 'text/html' : 'application/json'
+                    filename = `2fauth-worker-export-${type.replace('2fauth_', '')}-${date}.${(type === '2fauth_html') ? 'html' : 'json'}`
                     break
             }
 

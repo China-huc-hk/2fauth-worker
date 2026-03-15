@@ -33,7 +33,7 @@ export const dataMigrationService = {
      * 智能识别导入内容或文件的类型
      * @param {string|ArrayBuffer|Uint8Array} content - 文件文本内容或二进制数据
      * @param {string} filename - 文件名
-     * @returns {'bwauth_csv'|'generic_csv'|'text'|'bwauth_json'|'encrypted'|'json'|'2fas'|'2fas_encrypted'|'aegis'|'aegis_encrypted'|'phonefactor'|'unknown'} 返回类型标识
+     * @returns {'bitwarden_vault_csv'|'bitwarden_auth_csv'|'generic_csv'|'generic_text'|'bitwarden_vault_json'|'bitwarden_auth_json'|'bitwarden_vault_encrypted'|'2fauth_encrypted'|'2fauth_json'|'2fas'|'2fas_encrypted'|'aegis'|'aegis_encrypted'|'phonefactor'|'unknown'} 返回类型标识
      */
     detectFileType(content, filename) {
         // 如果是二进制数据，尝试用更宽容的方式判断 PhoneFactor
@@ -72,20 +72,24 @@ export const dataMigrationService = {
 
         if (filename && filename.toLowerCase().endsWith('.csv')) {
             const firstLine = typeof textContent === 'string' ? textContent.split('\n')[0].toLowerCase() : ''
-            if (firstLine.includes('login_totp')) return 'bwauth_csv'
+            if (firstLine.includes('login_totp')) return 'bitwarden_vault_csv'
+            if (firstLine.includes('otpauth')) return 'bitwarden_auth_csv' // Bitwarden Auth standalone typically exports simpler CSV
             return 'generic_csv'
         }
 
         if (typeof textContent === 'string' && textContent.trim().startsWith('otpauth://')) {
-            return 'text'
+            return 'generic_text'
         }
 
         if (typeof textContent === 'string') {
             const json = tryParseJSON(textContent)
             if (json) {
-                if (Array.isArray(json.items) && json.items.length > 0 && json.items[0].login && json.items[0].login.totp) return 'bwauth_json'
-                if (json.encrypted === true && json.app === '2fauth') return 'encrypted'
-                if (json.app === '2fauth' || Array.isArray(json.accounts) || Array.isArray(json.vault) || Array.isArray(json.secrets)) return 'json'
+                // 如果包含 folders 字段，通常是 Bitwarden Vault (密码管理器)
+                if (Array.isArray(json.items) && Array.isArray(json.folders)) return 'bitwarden_vault_json'
+                // 如果只包含 items 且是明文，归类为 bitwarden_auth_json (之前测试过的独立 App 路径)
+                if (Array.isArray(json.items) && (json.encrypted === false || !('encrypted' in json))) return 'bitwarden_auth_json'
+                if (json.encrypted === true && json.app === '2fauth') return '2fauth_encrypted'
+                if (json.app === '2fauth' || Array.isArray(json.accounts) || Array.isArray(json.vault) || Array.isArray(json.secrets)) return '2fauth_json'
                 // 2FAS encrypted: schemaVersion + servicesEncrypted（colon-separated salt:iv:cipher）
                 if (json.schemaVersion && json.servicesEncrypted && typeof json.servicesEncrypted === 'string') return '2fas_encrypted'
                 if (json.schemaVersion && Array.isArray(json.services)) return '2fas'
@@ -94,13 +98,15 @@ export const dataMigrationService = {
                 if (json.version === 1 && typeof json.salt === 'string' && typeof json.content === 'string') return 'proton_encrypted'
                 // Ente Auth 加密导出：同时包含 kdfParams 和 encryptedData 两个关键字段
                 if (json.kdfParams && typeof json.encryptedData === 'string') return 'ente_encrypted'
+                // Bitwarden password-protected export (Vault)
+                if (json.encrypted === true && json.passwordProtected === true && json.encKeyValidation_DO_NOT_EDIT) return 'bitwarden_vault_encrypted'
             }
         }
 
         if (filename) {
             const ext = filename.toLowerCase()
             if (ext.endsWith('.2fas')) return '2fas'
-            if (ext.endsWith('.txt')) return 'text'
+            if (ext.endsWith('.txt')) return 'generic_text'
         }
 
         return 'unknown'
@@ -128,7 +134,7 @@ export const dataMigrationService = {
         const timestamp = new Date().toISOString()
         const baseData = { version: "2.0", app: "2fauth", timestamp }
 
-        if (type === 'encrypted') {
+        if (type === '2fauth_encrypted') {
             if (!password) throw new migrationError('加密导出需要密码', 'MISSING_PASSWORD')
             const payload = { ...baseData, accounts: vault }
             const encryptedData = await encryptDataWithPassword(payload, password)
@@ -158,7 +164,7 @@ export const dataMigrationService = {
             }, null, 2)
         }
 
-        if (type === 'json') {
+        if (type === '2fauth_json') {
             return JSON.stringify({ ...baseData, encrypted: false, accounts: vault }, null, 2)
         }
 
@@ -223,7 +229,7 @@ export const dataMigrationService = {
             }, null, 2)
         }
 
-        if (type === 'text') {
+        if (type === 'generic_text') {
             return vault.map(acc => {
                 const label = encodeURIComponent(`${acc.service}:${acc.account}`)
                 const issuer = encodeURIComponent(acc.service)
@@ -232,7 +238,7 @@ export const dataMigrationService = {
         }
 
         if (type === 'csv') {
-            if (variant === 'bitwarden') {
+            if (variant === 'bitwarden_auth') {
                 let csv = 'name,secret,totp,favorite,folder\n'
                 vault.forEach(acc => {
                     const name = `"${acc.service}${acc.account ? ':' + acc.account : ''}"`
@@ -242,19 +248,18 @@ export const dataMigrationService = {
                     csv += `${name},${acc.secret},${totp},0,\n`
                 })
                 return csv
-            } else {
-                // generic csv
-                let csv = 'name,issuer,secret,algorithm,digits,period,type\n'
-                vault.forEach(acc => {
-                    const name = `"${acc.account}"`
-                    const issuer = `"${acc.service}"`
-                    csv += `${name},${issuer},${acc.secret},${acc.algorithm},${acc.digits},${acc.period},TOTP\n`
-                })
-                return csv
             }
+            // generic csv
+            let csv = 'name,issuer,secret,algorithm,digits,period,type\n'
+            vault.forEach(acc => {
+                const name = `"${acc.account}"`
+                const issuer = `"${acc.service}"`
+                csv += `${name},${issuer},${acc.secret},${acc.algorithm},${acc.digits},${acc.period},TOTP\n`
+            })
+            return csv
         }
 
-        if (type === 'bwauth') {
+        if (type === 'bitwarden_auth') {
             const items = vault.map(acc => {
                 const label = encodeURIComponent(acc.account ? `${acc.service}:${acc.account}` : acc.service)
                 const issuer = encodeURIComponent(acc.service)
@@ -631,6 +636,112 @@ export const dataMigrationService = {
     },
 
     /**
+     * 3.1 解密 Bitwarden 密码保护的加密 JSON
+     * @param {string} password 
+     * @param {Object} json 
+     * @returns {Promise<Object>} 解密后的 JSON 对象
+     */
+    async decryptBitwardenVaultEncrypted(password, json) {
+        try {
+            const saltStr = json.salt;
+            const iterations = json.kdfIterations;
+            const kdfType = json.kdfType;
+
+            if (kdfType !== 0) {
+                throw new migrationError(`不支持的 KDF 类型: ${kdfType}`, 'UNSUPPORTED_BITWARDEN_KDF');
+            }
+
+            // 1. 衍生主密钥: 关键是直接使用 salt 字符串作为 UTF-8 字节输入
+            const saltBytes = new TextEncoder().encode(saltStr);
+            const passwordBytes = new TextEncoder().encode(password);
+            
+            const keyMaterialHandle = await crypto.subtle.importKey(
+                'raw', passwordBytes, { name: 'PBKDF2' }, false, ['deriveBits']
+            );
+            const keyMaterialBuffer = await crypto.subtle.deriveBits(
+                { name: 'PBKDF2', salt: saltBytes, iterations, hash: 'SHA-256' },
+                keyMaterialHandle, 256
+            );
+            const keyMaterial = new Uint8Array(keyMaterialBuffer);
+
+            // 2. 衍生加密 Key 和 MAC Key (HKDF-Expand)
+            const encKey = await this._hkdfExpandSha256(keyMaterial, 'enc', 32);
+            const macKey = await this._hkdfExpandSha256(keyMaterial, 'mac', 32);
+
+            // 3. 校验并解密
+            const decryptStr = async (cipherString, ek, mk) => {
+                const parts = cipherString.split('.');
+                if (parts[0] !== '2') throw new Error('Unsupported encryption type');
+                const body = parts[1].split('|');
+                const iv = Uint8Array.from(atob(body[0]), c => c.charCodeAt(0));
+                const ct = Uint8Array.from(atob(body[1]), c => c.charCodeAt(0));
+                const mac = Uint8Array.from(atob(body[2]), c => c.charCodeAt(0));
+
+                // Verify MAC: hmacSha256(macKey, concatBytes(iv, cipher))
+                const hmacKeyHandle = await crypto.subtle.importKey(
+                    'raw', mk, { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']
+                );
+                const macInput = new Uint8Array(iv.length + ct.length);
+                macInput.set(iv, 0);
+                macInput.set(ct, iv.length);
+                const calculatedMac = new Uint8Array(await crypto.subtle.sign('HMAC', hmacKeyHandle, macInput));
+
+                // Constant time comparison (simple version)
+                if (mac.length !== calculatedMac.length) return null;
+                let diff = 0;
+                for (let i = 0; i < mac.length; i++) diff |= mac[i] ^ calculatedMac[i];
+                if (diff !== 0) return null;
+
+                // Decrypt
+                const aesKeyHandle = await crypto.subtle.importKey(
+                    'raw', ek, { name: 'AES-CBC' }, false, ['decrypt']
+                );
+                const decryptedBuffer = await crypto.subtle.decrypt(
+                    { name: 'AES-CBC', iv }, aesKeyHandle, ct
+                );
+                return new TextDecoder().decode(decryptedBuffer);
+            };
+
+            // 先解密校验位
+            const validationResult = await decryptStr(json.encKeyValidation_DO_NOT_EDIT, encKey, macKey);
+            if (!validationResult) throw new Error('MAC verification failed');
+
+            // 解密主体数据
+            const plaintext = await decryptStr(json.data, encKey, macKey);
+            return JSON.parse(plaintext);
+        } catch (error) {
+            throw new migrationError(`Bitwarden 解密失败: ${error.message}`, 'BITWARDEN_DECRYPTION_FAILED', error);
+        }
+    },
+
+    /**
+     * HKDF-Expand (SHA-256) 浏览器 SubtleCrypto 实现
+     */
+    async _hkdfExpandSha256(prk, info, length) {
+        const infoBytes = new TextEncoder().encode(info || '');
+        const prkHandle = await crypto.subtle.importKey(
+            'raw', prk, { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']
+        );
+        const result = new Uint8Array(length);
+        let previous = new Uint8Array(0);
+        let offset = 0;
+        let counter = 1;
+
+        while (offset < length) {
+            const input = new Uint8Array(previous.length + infoBytes.length + 1);
+            input.set(previous, 0);
+            input.set(infoBytes, previous.length);
+            input[input.length - 1] = counter & 0xff;
+            previous = new Uint8Array(await crypto.subtle.sign('HMAC', prkHandle, input));
+            const copyLen = Math.min(previous.length, length - offset);
+            result.set(previous.slice(0, copyLen), offset);
+            offset += copyLen;
+            counter++;
+        }
+        return result;
+    },
+
+    /**
      * 辅助函数：将字节数组编码为 Base32 字符串
      * @param {Uint8Array} bytes
      * @returns {string}
@@ -964,7 +1075,7 @@ export const dataMigrationService = {
         // 对于非 phonefactor 的格式，后续逻辑全部使用 textContent 替代 content
         content = textContent;
 
-        if (type === 'bwauth_csv' || type === 'generic_csv') {
+        if (type === 'bitwarden_auth_csv' || type === 'generic_csv') {
             rawVault = csvStrategy.parseCsv(content)
             content = JSON.stringify(rawVault)
             type = 'raw'
@@ -1008,6 +1119,22 @@ export const dataMigrationService = {
             }
         }
 
+        // 处理 Bitwarden 加密导出 (Password-protected Vault)
+        if (type === 'bitwarden_vault_encrypted') {
+            if (!password) throw new migrationError('导入 Bitwarden 加密文件需要密码', 'MISSING_PASSWORD')
+            try {
+                const bitwardenJson = typeof content === 'string' ? JSON.parse(content) : content
+                const decrypted = await this.decryptBitwardenVaultEncrypted(password, bitwardenJson)
+                // 解密后的格式就是普通的 bitwarden_vault_json 结构（有 items 数组）
+                content = JSON.stringify(decrypted)
+                type = 'bitwarden_vault_json'
+                password = undefined
+            } catch (e) {
+                if (e instanceof migrationError) throw e
+                throw new migrationError(`Bitwarden 加密备份解密失败: ${e.message}`, 'BITWARDEN_DECRYPTION_FAILED', e)
+            }
+        }
+
         if (type === 'aegis_encrypted') {
             const parsedAegis = tryParseJSON(content)
             const decryptedDb = await aegisStrategy.decryptDatabase(parsedAegis, password)
@@ -1019,7 +1146,7 @@ export const dataMigrationService = {
             content = JSON.stringify(parsedAegis.db)
         }
 
-        if (type === 'encrypted') {
+        if (type === '2fauth_encrypted') {
             if (!password) throw new migrationError('导入本系统加密文件需要密码', 'MISSING_PASSWORD')
             try {
                 let ciphertext = content
@@ -1031,7 +1158,7 @@ export const dataMigrationService = {
                 throw new migrationError('解密失败：密码错误或文件格式不兼容', 'DECRYPTION_FAILED', e)
             }
         }
-        else if (type === 'json') {
+        else if (type === '2fauth_json') {
             const json = typeof content === 'string' ? JSON.parse(content) : content
             if (Array.isArray(json.accounts)) rawVault = json.accounts
             else if (Array.isArray(json.vault)) rawVault = json.vault
@@ -1072,17 +1199,33 @@ export const dataMigrationService = {
                 })
             }
         }
-        else if (type === 'bwauth_json') {
+        else if (type === 'bitwarden_vault_json' || type === 'bitwarden_auth_json') {
             const json = typeof content === 'string' ? JSON.parse(content) : content
             if (Array.isArray(json.items)) {
                 json.items.forEach(item => {
-                    if (item.login && item.login.totp) {
-                        const accInfo = parseOtpUri(item.login.totp)
-                        if (accInfo) {
+                    // 兼容模式：既支持 Vault 的 login.totp，也支持可能的直接 totp 字段或 URI
+                    const totpRaw = (item.login && item.login.totp) || item.totp || item.uri || ''
+                    if (totpRaw) {
+                        let accInfo = parseOtpUri(totpRaw)
+                        if (!accInfo) {
+                            const secret = totpRaw.replace(/\s/g, '').toUpperCase()
+                            const base32Re = /^[A-Z2-7]+=*$/
+                            if (base32Re.test(secret)) {
+                                accInfo = {
+                                    service: item.name || 'Unknown',
+                                    account: (item.login && item.login.username) || item.username || 'Unknown',
+                                    secret: secret,
+                                    algorithm: 'SHA-1',
+                                    digits: 6,
+                                    period: 30,
+                                    category: ''
+                                }
+                            }
+                        } else {
                             accInfo.service = item.name || accInfo.service
-                            accInfo.account = item.login.username || accInfo.account
-                            rawVault.push(accInfo)
+                            accInfo.account = (item.login && item.login.username) || item.username || accInfo.account
                         }
+                        if (accInfo) rawVault.push(accInfo)
                     }
                 })
             }
@@ -1099,14 +1242,14 @@ export const dataMigrationService = {
                 period: s.info?.period || 30,
             }))
         }
-        else if (type === 'text') {
+        else if (type === 'generic_text') {
             const lines = content.split('\n')
             lines.forEach(line => {
                 const acc = parseOtpUri(line.trim())
                 if (acc) rawVault.push(acc)
             })
         }
-        else if (type === 'bwauth_csv' || type === 'generic_csv') rawVault = csvStrategy.parseCsv(content)
+        else if (type === 'bitwarden_vault_csv' || type === 'bitwarden_auth_csv' || type === 'generic_csv') rawVault = csvStrategy.parseCsv(content)
 
         return rawVault.map(acc => {
             if (typeof acc.account === 'string' && acc.account.includes(':')) {

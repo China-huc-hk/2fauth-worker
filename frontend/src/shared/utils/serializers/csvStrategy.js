@@ -51,7 +51,7 @@ export const csvStrategy = {
     },
 
     /**
-     * Decode a generic or bwauth CSV string.
+     * Decode a generic or bitwarden (vault) CSV string.
      * @param {string} csvText 
      * @returns {VaultItem[]}
      */
@@ -63,20 +63,40 @@ export const csvStrategy = {
         const headers = this._splitCsvLine(lines[0]).map(h => h.toLowerCase())
         const rawVault = []
 
-        const isBwAuth = headers.includes('login_totp')
+        const isBitwardenVault = headers.includes('login_totp')
+        const isBitwardenAuth = headers.includes('otpauth') // Bitwarden Auth standalone usually has simple column names
         const isGeneric = headers.includes('issuer') || headers.includes('secret') || headers.includes('name')
 
-        if (!isBwAuth && !isGeneric) return []
+        if (!isBitwardenVault && !isBitwardenAuth && !isGeneric) return []
 
         for (let i = 1; i < lines.length; i++) {
             const row = this._splitCsvLine(lines[i])
             const rowData = {}
             headers.forEach((h, index) => { rowData[h] = row[index] || '' })
 
-            if (isBwAuth) {
-                const totpStr = rowData['login_totp'] || ''
-                if (totpStr.startsWith('otpauth://')) {
-                    const accData = parseOtpUri(totpStr)
+            if (isBitwardenVault || isBitwardenAuth) {
+                const totpStr = (rowData['login_totp'] || rowData['otpauth'] || rowData['totp'] || '').trim()
+                if (totpStr) {
+                    let accData = null
+                    if (totpStr.startsWith('otpauth://')) {
+                        accData = parseOtpUri(totpStr)
+                    } else {
+                        // Check if it's a plain Base32 secret
+                        const secret = totpStr.replace(/\s/g, '').toUpperCase()
+                        const base32Re = /^[A-Z2-7]+=*$/
+                        if (base32Re.test(secret)) {
+                            accData = {
+                                service: rowData['name'] || 'Unknown',
+                                account: rowData['login_username'] || 'Unknown',
+                                secret: secret,
+                                algorithm: 'SHA-1',
+                                digits: 6,
+                                period: 30,
+                                category: ''
+                            }
+                        }
+                    }
+
                     if (accData) {
                         accData.service = rowData['name'] || accData.service
                         accData.account = rowData['login_username'] || accData.account

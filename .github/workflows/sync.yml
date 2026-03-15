@@ -19,8 +19,8 @@ jobs:
 
       - name: Configure git
         run: |
-          git config user.name "GitHub Action"
-          git config user.email "action@github.com"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
       - name: Sync main from upstream (Surgical)
         run: |

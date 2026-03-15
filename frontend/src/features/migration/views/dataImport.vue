@@ -53,7 +53,18 @@
                 </div>
               </div>
 
-              <!-- 组2: 移动端 App -->
+              <!-- 组2: 密码管理器 -->
+              <div class="ecosystem-group-card">
+                <h4 class="group-title">
+                  <el-icon><Monitor /></el-icon>
+                  {{ $t('migration.password_manager_format') }}
+                </h4>
+                <div class="ecosystem-grid">
+                  <el-button plain class="migration-button-with-icon" @click="triggerUpload"><el-icon><iconBitwarden /></el-icon> Bitwarden Vault (.json/.csv)</el-button>
+                </div>
+              </div>
+
+              <!-- 组3: 移动端 2FA App -->
               <div class="ecosystem-group-card">
                 <h4 class="group-title">
                   <el-icon><Iphone /></el-icon>
@@ -62,9 +73,9 @@
                 <div class="ecosystem-grid">
                   <el-button plain class="migration-button-with-icon" @click="triggerUpload"><el-icon><icon2FAS /></el-icon> 2FAS (.2fas)</el-button>
                   <el-button plain class="migration-button-with-icon" @click="triggerUpload"><el-icon><iconAegis /></el-icon> Aegis (.json/.txt)</el-button>
-                  <el-button plain class="migration-button-with-icon" @click="triggerUpload"><el-icon><iconBitwarden /></el-icon> Bitwarden (.json/.csv)</el-button>
-                  <el-button plain class="migration-button-with-icon" @click="triggerUpload"><el-icon><iconProtonAuth /></el-icon> Proton (.json)</el-button>
-                  <el-button plain class="migration-button-with-icon" @click="triggerUpload"><el-icon><iconEnte /></el-icon> Ente (.txt)</el-button>
+                  <el-button plain class="migration-button-with-icon" @click="triggerUpload"><el-icon><iconBitwarden /></el-icon> Bitwarden Auth (.json/.csv)</el-button>
+                  <el-button plain class="migration-button-with-icon" @click="triggerUpload"><el-icon><iconProtonAuth /></el-icon> Proton Auth(.json)</el-button>
+                  <el-button plain class="migration-button-with-icon" @click="triggerUpload"><el-icon><iconEnte /></el-icon> Ente Auth(.txt)</el-button>
                   <el-button plain class="migration-button-with-icon" @click="triggerUpload"><el-icon><iconGoogleAuth /></el-icon> Google Auth (.png/.jpg)</el-button>
                   <el-button plain class="migration-button-with-icon" @click="triggerUpload"><el-icon><iconMicrosoftAuth /></el-icon> Microsoft Auth (PhoneFactor)</el-button>
                 </div>
@@ -85,7 +96,7 @@
             </div>
 
             <!-- 详细引导 -->
-            <el-divider border-style="dashed" content-position="left" class="mt-30">
+            <el-divider border-style="dashed" content-position="center" class="mt-30">
               <span class="text-secondary font-12">{{ $t('migration.ga_ms_import_guide') }}</span>
             </el-divider>
 
@@ -139,6 +150,7 @@
       <el-alert v-else-if="currentImportType === 'proton_encrypted'" :title="$t('migration.detect_proton')" type="warning" :closable="false" class="mb-15" />
       <el-alert v-else-if="currentImportType === '2fas_encrypted'" :title="$t('migration.detect_2fas')" type="warning" :closable="false" class="mb-15" />
       <el-alert v-else-if="currentImportType === 'ente_encrypted'" :title="$t('migration.detect_ente')" type="warning" :closable="false" class="mb-15" />
+      <el-alert v-else-if="currentImportType === 'bitwarden_vault_encrypted'" :title="$t('migration.detect_bitwarden_vault')" type="warning" :closable="false" class="mb-15" />
       <el-alert v-else :title="$t('migration.detect_system')" type="success" :closable="false" class="mb-15" />
       <el-form label-position="top">
         <el-form-item :label="$t('migration.input_decrypt_pwd_label')">
@@ -155,7 +167,7 @@
 
 <script setup>
 import { ref } from 'vue'
-import { UploadFilled, Lock, Unlock, Document, Tickets, Grid, Warning, Folder, Iphone, QuestionFilled } from '@element-plus/icons-vue'
+import { UploadFilled, Lock, Unlock, Document, Tickets, Grid, Warning, Folder, Iphone, QuestionFilled, Monitor } from '@element-plus/icons-vue'
 import { useLayoutStore } from '@/shared/stores/layoutStore'
 import { useDataImport } from '@/features/migration/composables/useDataImport'
 

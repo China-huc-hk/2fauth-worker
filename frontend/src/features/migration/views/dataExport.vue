@@ -15,10 +15,10 @@
             <span>{{ $t('migration.system_backup') }}</span>
           </div>
           <div class="migration-button-row">
-            <el-button plain @click="openExportDialog('encrypted')" class="migration-button-with-icon">
+            <el-button plain @click="openExportDialog('2fauth_encrypted')" class="migration-button-with-icon">
               <el-icon><Lock /></el-icon> {{ $t('migration.encrypted_json') }}
             </el-button>
-            <el-button plain @click="openWarningDialog('json')" class="migration-button-with-icon">
+            <el-button plain @click="openWarningDialog('2fauth_json')" class="migration-button-with-icon">
               <el-icon><Unlock /></el-icon> {{ $t('migration.plaintext_json') }}
             </el-button>
           </div>
@@ -40,7 +40,7 @@
             <el-button plain @click="openGaDialogDirectly" class="migration-button-with-icon">
               <el-icon><iconGoogleAuth /></el-icon> {{ $t('migration.migrate_ga') }}
             </el-button>
-            <el-button plain @click="openWarningDialog('bwauth')" class="migration-button-with-icon">
+            <el-button plain @click="openWarningDialog('bitwarden_auth')" class="migration-button-with-icon">
               <el-icon><iconBitwarden /></el-icon> Bitwarden Auth (.json)
             </el-button>
           </div>
@@ -56,13 +56,13 @@
             <el-button plain @click="openWarningDialog('generic_json')" class="migration-button-with-icon">
               <el-icon><Document /></el-icon> {{ $t('migration.generic_format') }} (.json)
             </el-button>
-            <el-button plain @click="openWarningDialog('text')" class="migration-button-with-icon">
+            <el-button plain @click="openWarningDialog('generic_text')" class="migration-button-with-icon">
               <el-icon><Tickets /></el-icon> {{ $t('migration.otpauth_txt') }}
             </el-button>
             <el-button plain @click="openWarningDialog('csv', 'generic')" class="migration-button-with-icon">
               <el-icon><Grid /></el-icon> {{ $t('migration.spreadsheet_csv') }}
             </el-button>
-            <el-button plain @click="openWarningDialog('html')" class="migration-button-with-icon">
+            <el-button plain @click="openWarningDialog('2fauth_html')" class="migration-button-with-icon">
               <el-icon><Monitor /></el-icon> {{ $t('migration.html_page') }}
             </el-button>
           </div>
