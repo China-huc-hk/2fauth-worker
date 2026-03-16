@@ -260,7 +260,7 @@
 /* PDF Document Style (Unchanged as it's for print) */
 .pdf-document {
   width: 210mm;
-  padding: 25mm;
+  padding: 15mm 20mm;
   color: #0f172a;
   background: white;
   font-family: sans-serif;
@@ -302,9 +302,9 @@
 .doc-key-section {
   background: #f8fafc;
   border: 1px solid #e2e8f0;
-  padding: 12mm;
+  padding: 8mm 12mm;
   border-radius: 4mm;
-  margin-bottom: 15mm;
+  margin-bottom: 10mm;
 }
 
 .doc-key-section h2 {
@@ -333,15 +333,15 @@
 
 .doc-usage h3, .doc-legal h3 {
   border-bottom: 1px solid #e2e8f0;
-  padding-bottom: 3mm;
-  margin-bottom: 5mm;
+  padding-bottom: 2mm;
+  margin-bottom: 4mm;
   font-size: 14pt;
 }
 
 .doc-footer {
-  margin-top: 25mm;
+  margin-top: 10mm;
   border-top: 1px solid #e2e8f0;
-  padding-top: 8mm;
+  padding-top: 5mm;
   text-align: center;
   font-size: 10pt;
   color: #94a3b8;

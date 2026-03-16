@@ -314,7 +314,10 @@ export function useDataImport(emitFn) {
                     duration: batchErrors.value.length > 0 ? 0 : 8000
                 })
 
-                // The error case (data.success === false) is already handled by request.js interceptor
+                if (data.count > 0) {
+                    vaultStore.markDirty()
+                    emitFn('success')
+                }
             }
         } catch (err) {
             showBatchProgress.value = false

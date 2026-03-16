@@ -131,7 +131,7 @@
         </div>
 
         <div class="doc-footer">
-          &copy;{{ new Date().getFullYear() }} {{ $t('emergency.pdf_footer') }}
+          © {{ new Date().getFullYear() }} {{ $t('emergency.pdf_footer') }}
         </div>
       </div>
     </div>
