@@ -63,6 +63,7 @@ export const csvStrategy = {
         const headers = this._splitCsvLine(lines[0]).map(h => h.toLowerCase())
         const rawVault = []
 
+        // 1. 定义已知格式的列名特征
         const isBitwardenPass = headers.includes('login_totp')
         const isBitwardenAuth = headers.includes('otpauth') && !headers.includes('title')
         const is1Password = headers.includes('otpauth') && headers.includes('title')
@@ -70,12 +71,27 @@ export const csvStrategy = {
         const isDashlane = headers.includes('otpurl') && headers.includes('title') && headers.includes('username')
         const isGeneric = headers.includes('issuer') || headers.includes('secret') || headers.includes('name')
 
-        if (!isBitwardenPass && !isBitwardenAuth && !is1Password && !isProtonPass && !isDashlane && !isGeneric) return []
+        // 2. 增强型同义词库（用于识别未知 App 导出的文件）
+        const TOTP_SYNONYMS = ['otpauth', 'login_totp', 'totp', 'mfa', 'two_factor_code', 'secret', 'otpurl', '2fa', 'authenticator']
+        const NAME_SYNONYMS = ['name', 'title', 'item name', 'issuer', 'label']
+        const USER_SYNONYMS = ['username', 'login', 'login_username', 'account', 'email']
+
+        // 3. 辅助函数：清洗密钥内容
+        const cleanSecret = (str) => {
+            if (!str) return ''
+            return str.toString().trim().replace(/[\s-]/g, '').toUpperCase()
+        }
+
+        // 如果连通用识别都不过，且没有同义词表头，则返回
+        const hasAnyTotpHeader = headers.some(h => TOTP_SYNONYMS.includes(h))
+        if (!isBitwardenPass && !isBitwardenAuth && !is1Password && !isProtonPass && !isDashlane && !isGeneric && !hasAnyTotpHeader) return []
 
         for (let i = 1; i < lines.length; i++) {
             const row = this._splitCsvLine(lines[i])
             const rowData = {}
             headers.forEach((h, index) => { rowData[h] = row[index] || '' })
+
+            // --- 优先级路径：已知 App 格式 ---
 
             if (is1Password) {
                 const totpStr = (rowData['otpauth'] || '').trim()
@@ -94,8 +110,7 @@ export const csvStrategy = {
                     if (totpStr.startsWith('otpauth://')) {
                         accData = parseOtpUri(totpStr)
                     } else {
-                        // Check if it's a plain Base32 secret
-                        const secret = totpStr.replace(/\s/g, '').toUpperCase()
+                        const secret = cleanSecret(totpStr)
                         const base32Re = /^[A-Z2-7]+=*$/
                         if (base32Re.test(secret)) {
                             accData = {
@@ -109,7 +124,6 @@ export const csvStrategy = {
                             }
                         }
                     }
-
                     if (accData) {
                         accData.service = rowData['name'] || accData.service
                         accData.account = rowData['login_username'] || accData.account
@@ -138,22 +152,43 @@ export const csvStrategy = {
                         rawVault.push(accData)
                     }
                 }
-            } else {
-                const secret = rowData['secret'] || ''
-                if (secret) {
-                    // 本系统导出的 generic csv: name=account, issuer=service
-                    // 兼容其他工具: 若有独立的 account 列则优先
-                    const service = rowData['issuer'] || rowData['name'] || 'Unknown'
-                    const account = rowData['account'] || rowData['name'] || ''
-                    rawVault.push({
-                        service,
-                        account,
-                        secret: secret.replace(/\s/g, '').toUpperCase(),
-                        algorithm: (rowData['algorithm'] || 'SHA1').toUpperCase().replace(/^SHA-?1$/, 'SHA-1').replace(/^SHA-?256$/, 'SHA-256').replace(/^SHA-?512$/, 'SHA-512'),
-                        digits: parseInt(rowData['digits'] || '6', 10),
-                        period: parseInt(rowData['period'] || '30', 10),
-                        category: ''
-                    })
+            }
+            // --- 兜底路径：智能同义词识别 (支持 Keeper, NordPass, RoboForm, KeePassXC 等) ---
+            else {
+                // 查找包含密钥数据的列
+                const totpHeader = headers.find(h => TOTP_SYNONYMS.includes(h))
+                const totpVal = totpHeader ? (rowData[totpHeader] || '').trim() : ''
+
+                if (totpVal) {
+                    // 情况 A: 包含 otpauth:// 的 URI
+                    if (totpVal.toLowerCase().startsWith('otpauth://')) {
+                        const accData = parseOtpUri(totpVal)
+                        if (accData) {
+                            const serviceHeader = headers.find(h => NAME_SYNONYMS.includes(h))
+                            const userHeader = headers.find(h => USER_SYNONYMS.includes(h))
+                            accData.service = rowData[serviceHeader] || accData.service
+                            accData.account = rowData[userHeader] || accData.account
+                            rawVault.push(accData)
+                        }
+                    }
+                    // 情况 B: 纯 Base32 密钥内容
+                    else {
+                        const secret = cleanSecret(totpVal)
+                        const base32Re = /^[A-Z2-7]+=*$/
+                        if (base32Re.test(secret)) {
+                            const serviceHeader = headers.find(h => NAME_SYNONYMS.includes(h))
+                            const userHeader = headers.find(h => USER_SYNONYMS.includes(h))
+                            rawVault.push({
+                                service: rowData[serviceHeader] || 'Unknown',
+                                account: rowData[userHeader] || 'Unknown Account',
+                                secret: secret,
+                                algorithm: (rowData['algorithm'] || 'SHA1').toUpperCase().replace(/^SHA-?1$/, 'SHA-1').replace(/^SHA-?256$/, 'SHA-256').replace(/^SHA-?512$/, 'SHA-512'),
+                                digits: parseInt(rowData['digits'] || '6', 10),
+                                period: parseInt(rowData['period'] || '30', 10),
+                                category: ''
+                            })
+                        }
+                    }
                 }
             }
         }

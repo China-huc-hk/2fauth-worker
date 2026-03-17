@@ -63,6 +63,12 @@
                   <el-button plain class="migration-button-with-icon" @click="triggerUpload"><el-icon><iconBitwardenPass /></el-icon> Bitwarden Pass (.json/.csv)</el-button>
                   <el-button plain class="migration-button-with-icon" @click="triggerUpload"><el-icon><icon1Password /></el-icon> 1Password (.1pux/.csv)</el-button>
                   <el-button plain class="migration-button-with-icon" @click="triggerUpload"><el-icon><iconProtonPass /></el-icon> Proton Pass (.pgp/.csv)</el-button>
+                  <el-button plain class="migration-button-with-icon" @click="triggerUpload"><el-icon><iconKeeper /></el-icon> Keeper (.csv)</el-button>
+                  <el-button plain class="migration-button-with-icon" @click="triggerUpload"><el-icon><iconNordPass /></el-icon> NordPass (.csv)</el-button>
+                  <el-button plain class="migration-button-with-icon" @click="triggerUpload"><el-icon><iconEnpass /></el-icon> Enpass (.csv)</el-button>
+                  <el-button plain class="migration-button-with-icon" @click="triggerUpload"><el-icon><iconRoboForm /></el-icon> Roboform (.csv)</el-button>
+                  <el-button plain class="migration-button-with-icon" @click="triggerUpload"><el-icon><iconKeePass /></el-icon> KeePassXC (.csv)</el-button>
+                  <el-button plain class="migration-button-with-icon" @click="triggerUpload"><el-icon><iconApple /></el-icon> iCloud Keychain (.csv)</el-button>
                   <el-button plain class="migration-button-with-icon" @click="triggerUpload"><el-icon><iconDashlanePass /></el-icon> Dashlane (.csv)</el-button>
                 </div>
               </div>
@@ -197,6 +203,12 @@ import iconProtonPass from '@/shared/components/icons/iconProtonPass.vue'
 import iconEnte from '@/shared/components/icons/iconEnte.vue'
 import icon1Password from '@/shared/components/icons/icon1Password.vue'
 import iconLastPassAuth from '@/shared/components/icons/iconLastPassAuth.vue'
+import iconKeeper from '@/shared/components/icons/iconKeeper.vue'
+import iconNordPass from '@/shared/components/icons/iconNordPass.vue'
+import iconRoboForm from '@/shared/components/icons/iconRoboForm.vue'
+import iconEnpass from '@/shared/components/icons/iconEnpass.vue'
+import iconKeePass from '@/shared/components/icons/iconKeePass.vue'
+import iconApple from '@/shared/components/icons/iconApple.vue'
 
 const emit = defineEmits(['success'])
 
